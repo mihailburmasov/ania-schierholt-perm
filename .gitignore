@@ -1,0 +1,6 @@
+node_modules/
+dist/
+server/config.php
+# PDF-каталоги бренда не публикуем (в них контакты сотрудников и агентов); лежат в папке клиента
+_source/catalogs/
+_source/raw/*.jsonl

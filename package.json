@@ -1,0 +1,25 @@
+{
+  "name": "studio60-perm",
+  "version": "1.0.0",
+  "description": "Сайт-каталог Ania Schierholt в Перми (Studio 60)",
+  "scripts": {
+    "build": "node build.mjs",
+    "serve": "php -S localhost:8000 -t dist",
+    "extract": "node tools/extract-catalog.mjs",
+    "extract:all": "node -e \"require('fs').mkdirSync('_source/raw',{recursive:true})\" && node tools/extract-catalog.mjs _source/catalogs/AS_AW26.pdf _source/raw/aw26 aw26 > _source/raw/aw26.jsonl && node tools/extract-catalog.mjs _source/catalogs/hosen-k33.pdf _source/raw/hosen hosen > _source/raw/hosen.jsonl",
+    "deploy:demo": "bash tools/deploy-demo.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "mupdf": "^1.28.1",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0"
+  },
+  "private": true
+}
