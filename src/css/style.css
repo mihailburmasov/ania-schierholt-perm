@@ -80,6 +80,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .logo { display: flex; flex-direction: column; text-decoration: none; line-height: 1; }
 .logo__name { font: 500 28px/1 var(--serif); letter-spacing: .02em; }
 .logo__sub { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.logo--brand { flex-shrink: 0; }
+.logo__mark { display: block; width: 210px; height: auto; color: var(--ink); }
+.logo--brand .logo__sub { margin-top: 8px; font-size: 9px; letter-spacing: .32em; }
 .nav { display: flex; gap: 28px; margin-left: 24px; }
 .nav a { text-decoration: none; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 6px 0; border-bottom: 1px solid transparent; }
 .nav a:hover, .nav a[aria-current] { border-color: var(--ink); }
@@ -354,6 +357,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .burger { display: flex; }
   .header__in { gap: 12px; }
   .logo__name { font-size: 24px; }
+  .logo__mark { width: 158px; }
+  .logo--brand .logo__sub { margin-top: 6px; font-size: 8px; letter-spacing: .28em; }
   .nav { position: fixed; inset: var(--header-h) 0 0 0; margin: 0; background: var(--bg); flex-direction: column; gap: 0; padding: 16px var(--gutter); transform: translateX(-100%); transition: transform .25s; overflow: auto; }
   .nav a { font: 500 30px/1.2 var(--serif); text-transform: none; letter-spacing: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
   .nav__mobile-extra { display: grid; gap: 4px; padding-top: 20px; font-size: 15px; }

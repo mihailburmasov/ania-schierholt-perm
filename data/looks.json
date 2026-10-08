@@ -3,7 +3,7 @@
  "looks": [
   {
    "id": "look-01",
-   "image": "aw26/aw26-p01-1",
+   "image": "bank/aw26/aw26-p01-1",
    "collection": "aw26",
    "items": [
     "WE 3360/49 Caper",
@@ -13,7 +13,7 @@
   },
   {
    "id": "look-02",
-   "image": "aw26/aw26-p02-1",
+   "image": "bank/aw26/aw26-p02-1",
    "collection": "aw26",
    "items": [
     "JA 3351/66 Caper",
@@ -22,7 +22,7 @@
   },
   {
    "id": "look-03",
-   "image": "aw26/aw26-p03-1",
+   "image": "bank/aw26/aw26-p03-1",
    "collection": "aw26",
    "items": [
     "JA 3351/66 Caper",
@@ -31,7 +31,7 @@
   },
   {
    "id": "look-04",
-   "image": "aw26/aw26-p04-1",
+   "image": "bank/aw26/aw26-p04-1",
    "collection": "aw26",
    "items": [
     "JA 3363/55 Caper",
@@ -41,7 +41,7 @@
   },
   {
    "id": "look-05",
-   "image": "aw26/aw26-p05-1",
+   "image": "bank/aw26/aw26-p05-1",
    "collection": "aw26",
    "items": [
     "BL 3328/55 Caper",
@@ -60,7 +60,7 @@
   },
   {
    "id": "look-07",
-   "image": "aw26/aw26-p07-1",
+   "image": "bank/aw26/aw26-p07-1",
    "collection": "aw26",
    "items": [
     "JA 3350/69 Muschel",
@@ -70,7 +70,7 @@
   },
   {
    "id": "look-08",
-   "image": "aw26/aw26-p08-1",
+   "image": "bank/aw26/aw26-p08-1",
    "collection": "aw26",
    "items": [
     "MA 3362/69 Muschel",
@@ -80,7 +80,7 @@
   },
   {
    "id": "look-09",
-   "image": "aw26/aw26-p09-1",
+   "image": "bank/aw26/aw26-p09-1",
    "collection": "aw26",
    "items": [
     "BL 3329/42 Muschel",
@@ -89,7 +89,7 @@
   },
   {
    "id": "look-10",
-   "image": "aw26/aw26-p10-1",
+   "image": "bank/aw26/aw26-p10-1",
    "collection": "aw26",
    "items": [
     "BL 3333/42 White",
@@ -98,7 +98,7 @@
   },
   {
    "id": "look-11",
-   "image": "aw26/aw26-p11-1",
+   "image": "bank/aw26/aw26-p11-1",
    "collection": "aw26",
    "items": [
     "MA 3362/69 Muschel",
@@ -107,7 +107,7 @@
   },
   {
    "id": "look-12",
-   "image": "aw26/aw26-p12-1",
+   "image": "bank/aw26/aw26-p12-1",
    "collection": "aw26",
    "items": [
     "BL 3330/42 Muschel",
@@ -116,7 +116,7 @@
   },
   {
    "id": "look-13",
-   "image": "aw26/aw26-p13-1",
+   "image": "bank/aw26/aw26-p13-1",
    "collection": "aw26",
    "items": [
     "JA 3354/55 Muschel",
@@ -125,7 +125,7 @@
   },
   {
    "id": "look-14",
-   "image": "aw26/aw26-p14-1",
+   "image": "bank/aw26/aw26-p14-1",
    "collection": "aw26",
    "items": [
     "JA 3352/55 Muschel",
@@ -135,7 +135,7 @@
   },
   {
    "id": "look-15",
-   "image": "aw26/aw26-p15-1",
+   "image": "bank/aw26/aw26-p15-1",
    "collection": "aw26",
    "items": [
     "BL 3333/42 White",
@@ -144,7 +144,7 @@
   },
   {
    "id": "look-16",
-   "image": "aw26/aw26-p16-1",
+   "image": "bank/aw26/aw26-p16-1",
    "collection": "aw26",
    "items": [
     "BL 3337/42 White",
@@ -153,7 +153,7 @@
   },
   {
    "id": "look-17",
-   "image": "aw26/aw26-p17-1",
+   "image": "bank/aw26/aw26-p17-1",
    "collection": "aw26",
    "items": [
     "JA 3352/55 Muschel",
@@ -162,7 +162,7 @@
   },
   {
    "id": "look-18",
-   "image": "aw26/aw26-p18-1",
+   "image": "bank/aw26/aw26-p18-1",
    "collection": "aw26",
    "items": [
     "JA 3352/66 Anthra",
@@ -171,7 +171,7 @@
   },
   {
    "id": "look-19",
-   "image": "aw26/aw26-p19-1",
+   "image": "bank/aw26/aw26-p19-1",
    "collection": "aw26",
    "items": [
     "JA 3355/41 Anthra",
@@ -180,7 +180,7 @@
   },
   {
    "id": "look-20",
-   "image": "aw26/aw26-p20-1",
+   "image": "bank/aw26/aw26-p20-1",
    "collection": "aw26",
    "items": [
     "BL 3333/41 Anthra",
@@ -189,7 +189,7 @@
   },
   {
    "id": "look-21",
-   "image": "aw26/aw26-p21-1",
+   "image": "bank/aw26/aw26-p21-1",
    "collection": "aw26",
    "items": [
     "WE 3361/49 Anthra",
@@ -199,7 +199,7 @@
   },
   {
    "id": "look-22",
-   "image": "aw26/aw26-p22-1",
+   "image": "bank/aw26/aw26-p22-1",
    "collection": "aw26",
    "items": [
     "JA 3352/66 Anthra",
@@ -209,7 +209,7 @@
   },
   {
    "id": "look-23",
-   "image": "aw26/aw26-p23-1",
+   "image": "bank/aw26/aw26-p23-1",
    "collection": "aw26",
    "items": [
     "JA 3350/69 Anthra",
@@ -219,7 +219,7 @@
   },
   {
    "id": "look-24",
-   "image": "aw26/aw26-p24-1",
+   "image": "bank/aw26/aw26-p24-1",
    "collection": "aw26",
    "items": [
     "WE 3360/49 Anthra",
@@ -229,7 +229,7 @@
   },
   {
    "id": "look-25",
-   "image": "aw26/aw26-p25-1",
+   "image": "bank/aw26/aw26-p25-1",
    "collection": "aw26",
    "items": [
     "JA 3358/69 Anthra",
@@ -239,7 +239,7 @@
   },
   {
    "id": "look-26",
-   "image": "aw26/aw26-p26-1",
+   "image": "bank/aw26/aw26-p26-1",
    "collection": "aw26",
    "items": [
     "JA 3354/69 Anthra",
@@ -248,7 +248,7 @@
   },
   {
    "id": "look-27",
-   "image": "aw26/aw26-p27-1",
+   "image": "bank/aw26/aw26-p27-1",
    "collection": "aw26",
    "items": [
     "BL 3330/68 Anthra",
@@ -257,7 +257,7 @@
   },
   {
    "id": "look-28",
-   "image": "aw26/aw26-p28-1",
+   "image": "bank/aw26/aw26-p28-1",
    "collection": "aw26",
    "items": [
     "BL 3327/54 Azur",
@@ -266,7 +266,7 @@
   },
   {
    "id": "look-29",
-   "image": "aw26/aw26-p29-1",
+   "image": "bank/aw26/aw26-p29-1",
    "collection": "aw26",
    "items": [
     "JA 3358/69 Anthra",

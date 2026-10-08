@@ -9,6 +9,9 @@ const DIST = path.join(ROOT, "dist");
 const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), "utf8"));
 const site = read("data/site.json");
 const cat = read("data/products.json");
+// логотип бренда из банка изображений Ania Schierholt; цвет берётся из CSS (currentColor)
+const brandLogo = fs.readFileSync(path.join(ROOT, "src/brand/ania-schierholt-logo.svg"), "utf8").trim()
+  .replace("<svg ", '<svg class="logo__mark" role="img" aria-hidden="true" focusable="false" ');
 const { looks } = read("data/looks.json");
 const VERSION = Date.now().toString(36);
 // BASE — подпапка, если сайт лежит не в корне домена (демо на GitHub Pages: BASE=/studio60-perm).
@@ -34,6 +37,7 @@ const credit = `https://sitomika.ru/?utm_source=${site.creditSlug}&amp;utm_mediu
 // ---------- фото ----------
 // Каждое исходное фото режется на несколько ширин WebP; уже готовые файлы не пересобираются.
 const imgCache = new Map();
+const usedImg = new Set(); // всё, что сгенерировано в этой сборке; остальное из dist/img удаляется
 async function img(srcRel, widths) {
   const key = srcRel + widths.join();
   if (imgCache.has(key)) return imgCache.get(key);
@@ -50,6 +54,7 @@ async function img(srcRel, widths) {
       await sharp(src).resize({ width }).webp({ quality: 80 }).toFile(dest);
     }
     out.push({ url: "/" + rel, w: width });
+    usedImg.add(rel);
   }
   const res = {
     src: out[out.length - 1].url,
@@ -62,7 +67,7 @@ async function img(srcRel, widths) {
   imgCache.set(key, res);
   return res;
 }
-const LOOK_W = [480, 880];
+const LOOK_W = [480, 880, 1320, 1748];
 const PACK_W = [480, 960, 1536];
 const picture = (im, alt, { sizes = "(max-width: 700px) 50vw, 25vw", eager = false, cls = "" } = {}) =>
   `<img class="${cls}" src="${im.small}" srcset="${im.srcset}" sizes="${sizes}" width="${im.w}" height="${im.h}" alt="${esc(alt)}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">`;
@@ -108,7 +113,8 @@ async function prepareImages() {
     for (const v of p.variants) {
       // сначала образы, где вещей меньше (сама вещь виднее); cover в products.json — ручной выбор обложки
       v.looks.sort((x, y) => (y.id === v.cover) - (x.id === v.cover) || x.items.length - y.items.length || x.n - y.n);
-      if (v.pack) v.images.push(await img(v.pack, PACK_W));
+      // pack — предметное фото или список ракурсов (первый — обложка карточки)
+      for (const pk of [].concat(v.pack || [])) v.images.push(await img(pk, PACK_W));
       for (const l of v.looks) v.images.push(l.img);
       if (!v.images.length) console.warn("! нет фото:", p.article, v.color);
     }
@@ -152,7 +158,8 @@ ${noindex || PREVIEW ? '<meta name="robots" content="noindex">' : ""}
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f5f1eb">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css?v=${VERSION}">
@@ -167,9 +174,9 @@ ${metrika}
 </div></div>
 <header class="header"><div class="wrap header__in">
   <button class="burger" type="button" aria-label="Меню" aria-expanded="false" data-burger><span></span><span></span></button>
-  <a class="logo" href="/" aria-label="${esc(site.name)} — на главную">
-    <span class="logo__name">${esc(site.name)}</span>
-    <span class="logo__sub">${esc(site.brand)} · ${esc(site.city)}</span>
+  <a class="logo logo--brand" href="/" aria-label="${esc(site.brand)} в Перми — на главную">
+    ${brandLogo}
+    <span class="logo__sub">Бутик в Перми</span>
   </a>
   <nav class="nav" aria-label="Основное меню" data-nav>
     ${nav.map(([h, t]) => `<a href="${h}"${pagePath.startsWith(h) ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
@@ -871,7 +878,6 @@ function staticFiles() {
   const copy = (from, to) => { fs.mkdirSync(path.dirname(path.join(DIST, to)), { recursive: true }); fs.copyFileSync(path.join(ROOT, from), path.join(DIST, to)); };
   copy("src/css/style.css", "assets/style.css");
   copy("src/js/app.js", "assets/app.js");
-  copy("src/favicon.svg", "favicon.svg");
   copy("src/.htaccess", ".htaccess");
   copy("server/send.php", "send.php");
   // config.php (пароли) в сборку не копируется — он лежит только на хостинге рядом с send.php
@@ -883,8 +889,29 @@ function staticFiles() {
     copy(`${G}cormorant-garamond-${sub}-${w}-${s}.woff2`, `fonts/cormorant-${sub}-${w}-${s}.woff2`);
 }
 
-async function appleIcon() {
-  await sharp(path.join(ROOT, "src/favicon.svg")).resize(180, 180).flatten({ background: "#1f1e1c" }).png().toFile(path.join(DIST, "apple-touch-icon.png"));
+// Фавикон — монограмма «A» из банка изображений бренда (src/brand/favicon-source.png, чёрная буква на белом).
+// На мелких размерах тонкие линии бледнеют, поэтому для 16–48 px поднимаем контраст.
+async function icons() {
+  const glyph = await sharp(path.join(ROOT, "src/brand/favicon-source.png")).trim({ threshold: 40 }).toBuffer({ resolveWithObject: true });
+  const side = Math.round(Math.max(glyph.info.width, glyph.info.height) * 1.22);
+  const square = await sharp({ create: { width: side, height: side, channels: 3, background: "#fff" } })
+    .composite([{ input: glyph.data, left: Math.round((side - glyph.info.width) / 2), top: Math.round((side - glyph.info.height) / 2) }])
+    .png().toBuffer();
+  const png = (s, k = 1) => { let im = sharp(square).resize(s, s, { kernel: "lanczos3" }); if (k !== 1) im = im.linear(k, -255 * (k - 1)); return im.png().toBuffer(); };
+  // favicon.ico с PNG внутри (16, 32, 48)
+  const icoSizes = [[16, 1.7], [32, 1.7], [48, 1.5]];
+  const bufs = await Promise.all(icoSizes.map(([s, k]) => png(s, k)));
+  const head = Buffer.alloc(6 + 16 * bufs.length);
+  head.writeUInt16LE(0, 0); head.writeUInt16LE(1, 2); head.writeUInt16LE(bufs.length, 4);
+  let offset = head.length;
+  bufs.forEach((b, i) => {
+    const o = 6 + 16 * i, s = icoSizes[i][0];
+    head.writeUInt8(s, o); head.writeUInt8(s, o + 1); head.writeUInt16LE(1, o + 4); head.writeUInt16LE(32, o + 6);
+    head.writeUInt32LE(b.length, o + 8); head.writeUInt32LE(offset, o + 12); offset += b.length;
+  });
+  fs.writeFileSync(path.join(DIST, "favicon.ico"), Buffer.concat([head, ...bufs]));
+  fs.writeFileSync(path.join(DIST, "icon-192.png"), await png(192));
+  fs.writeFileSync(path.join(DIST, "apple-touch-icon.png"), await png(180));
 }
 
 // ---------- подпапка: префикс ко всем корневым ссылкам ----------
@@ -926,8 +953,10 @@ for (const f of fs.existsSync(DIST) ? fs.readdirSync(DIST) : []) if (f !== "img"
 fs.mkdirSync(DIST, { recursive: true });
 await prepareImages();
 staticFiles();
-await appleIcon();
+await icons();
 await ogImage();
+usedImg.add("img/og.jpg");
+for (const f of fs.readdirSync(path.join(DIST, "img"))) if (!usedImg.has("img/" + f)) fs.rmSync(path.join(DIST, "img", f));
 catalogJs();
 pageHome();
 pageCatalog(null);
