@@ -150,7 +150,7 @@ function layout({ title, desc, path: pagePath, body, og, jsonld = [], main = "" 
 <link rel="canonical" href="${canonical}">
 ${noindex || PREVIEW ? '<meta name="robots" content="noindex">' : ""}
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="${esc(site.name)} — ${esc(site.tagline)}">
+<meta property="og:site_name" content="${esc(site.shopName)}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}">
@@ -330,7 +330,7 @@ const sizeTable = `<div class="table-wrap"><table class="sizes">
 const ldStore = {
   "@context": "https://schema.org",
   "@type": "ClothingStore",
-  name: `${site.name} — ${site.brand}`,
+  name: site.shopName,
   url: site.domain + "/",
   telephone: site.phone,
   email: site.email,
@@ -439,7 +439,7 @@ function pageHome() {
 </div></section>
 ${callbackForm("Главная")}`;
   write("index.html", layout({
-    title: `${site.brand} в Перми — женская одежда в наличии | ${site.name}`,
+    title: `${site.shopName} — женская одежда в наличии, бутик в ${site.mall}`,
     desc: `Бутик ${site.brand} в Перми, ${site.mall}. Коллекция осень–зима 2026: брюки, жакеты, блузы, пальто, жилеты. Всё в наличии, примерка в бутике, доставка по России.`,
     path: "/",
     body,
@@ -484,7 +484,7 @@ function pageCatalog(category) {
 <section class="section"><div class="wrap">${steps}</div></section>
 ${callbackForm("Каталог: " + title, "Не нашли нужное?", "Расскажите, что ищете, — подберём из наличия в бутике и пришлём фото в мессенджер.")}`;
   write(pagePath.slice(1) + "index.html", layout({
-    title: category ? `${category.seoTitle} — купить в Перми | ${site.name}` : `Каталог ${site.brand} — купить в Перми с доставкой по России | ${site.name}`,
+    title: category ? `${category.seoTitle} — купить в Перми` : `Каталог ${site.brand} — купить в Перми с доставкой по России`,
     desc: category
       ? `${category.seoTitle}: ${list.length} ${plural(list.length, "модель", "модели", "моделей")} в наличии в бутике в ${site.mall}, Пермь. Примерка, доставка по России, оплата после звонка консультанта.`
       : `Все вещи ${site.brand} коллекции осень–зима 2026 в наличии в Перми: брюки, жакеты, блузы, пальто, жилеты. Доставка по России, примерка в бутике.`,
@@ -634,7 +634,7 @@ ${sameCat.length ? `<section class="section"><div class="wrap">
     ...(p.price ? { offers: { "@type": "Offer", price: p.price, priceCurrency: "RUB", availability: "https://schema.org/InStock", url: site.domain + p.url } } : {}),
   };
   write(`product/${p.slug}/index.html`, layout({
-    title: `${p.title} ${site.brand} ${p.article} — купить в Перми | ${site.name}`,
+    title: `${p.title} ${site.brand} ${p.article} — купить в Перми`,
     desc: `${p.title} ${site.brand}, артикул ${p.article}, ${p.variants.map((v) => colorName(v.color).toLowerCase()).join(", ")}. В наличии в Перми, ${site.mall}. Примерка, доставка по России, оплата после звонка.`,
     path: p.url,
     og: v0.images[0]?.src,
@@ -653,7 +653,7 @@ function pageLooks() {
   <div class="looks-list looks-list--all">${lookList.map((l) => lookBlock(l)).join("")}</div>
 </div>`;
   write("looks/index.html", layout({
-    title: `Образы ${site.brand} осень–зима 2026 — лукбук | ${site.name}`,
+    title: `Образы ${site.brand} осень–зима 2026 — лукбук | ${site.shopName}`,
     desc: `Лукбук ${site.brand} осень–зима 2026: ${lookList.length} готовых образов. Закажите образ целиком с примеркой в Перми или доставкой по России.`,
     path: "/looks/",
     body,
@@ -686,7 +686,7 @@ function pageBoutique() {
 </div>
 ${callbackForm("Бутик", "Хотите прийти на примерку?", "Оставьте телефон — договоримся о времени и подготовим вещи в ваших размерах.")}`;
   write("boutique/index.html", layout({
-    title: `Бутик ${site.brand} в Перми, ${site.mall} — адрес и контакты | ${site.name}`,
+    title: `Бутик ${site.brand} в Перми, ${site.mall} — адрес и контакты`,
     desc: `Бутик ${site.brand} в Перми: ${site.address}. ${site.hours}. Примерка, консультация, доставка по России.`,
     path: "/boutique/",
     body,
@@ -721,8 +721,8 @@ function pageDelivery() {
   </div>
 </div>`;
   write("delivery/index.html", layout({
-    title: `Доставка, оплата и возврат | ${site.name} — ${site.brand} в Перми`,
-    desc: `Как заказать ${site.brand} в бутике ${site.name}: примерка в ${site.mall}, доставка по Перми и России, оплата после звонка консультанта, таблица размеров, возврат.`,
+    title: `Доставка, оплата и возврат | ${site.shopName}`,
+    desc: `Как заказать ${site.brand} в Перми: примерка в ${site.mall}, доставка по Перми и России, оплата после звонка консультанта, таблица размеров, возврат.`,
     path: "/delivery/",
     body,
     jsonld: [crumbsLd(cr)],
@@ -764,7 +764,7 @@ function pageCart() {
     </form>
   </div>
 </div>`;
-  write("cart/index.html", layout({ title: `Корзина | ${site.name}`, desc: "Запрос на покупку", path: "/cart/", body, main: "page-cart", noindex: true }));
+  write("cart/index.html", layout({ title: `Корзина | ${site.shopName}`, desc: "Запрос на покупку", path: "/cart/", body, main: "page-cart", noindex: true }));
 }
 
 function pageThanks() {
@@ -776,14 +776,14 @@ function pageThanks() {
   <p>Если хотите быстрее — позвоните: <a class="link" href="tel:${site.phoneHref}" data-goal="phone_click">${esc(site.phone)}</a></p>
   <div class="btn-row"><a class="btn btn--dark" href="/looks/">Посмотреть образы</a><a class="btn btn--ghost" href="/catalog/">Вернуться в каталог</a></div>
 </div>`;
-  write("spasibo/index.html", layout({ title: `Спасибо за запрос | ${site.name}`, desc: "Запрос отправлен", path: "/spasibo/", body, noindex: true }));
+  write("spasibo/index.html", layout({ title: `Спасибо за запрос | ${site.shopName}`, desc: "Запрос отправлен", path: "/spasibo/", body, noindex: true }));
 }
 
 function page404() {
   const body = `<div class="wrap narrow thanks"><p class="kicker">Ошибка 404</p><h1 class="h1 h1--page">Такой страницы нет</h1>
   <p class="lead">Возможно, модель уже распродана или ссылка устарела. Загляните в каталог — там всё, что есть в наличии.</p>
   <div class="btn-row"><a class="btn btn--dark" href="/catalog/">Каталог</a><a class="btn btn--ghost" href="/">На главную</a></div></div>`;
-  write("404.html", layout({ title: `Страница не найдена | ${site.name}`, desc: "Страница не найдена", path: "/404.html", body, noindex: true }));
+  write("404.html", layout({ title: `Страница не найдена | ${site.shopName}`, desc: "Страница не найдена", path: "/404.html", body, noindex: true }));
 }
 
 function pageLegal() {
@@ -810,7 +810,7 @@ function pageLegal() {
   <h2 class="h3">8. Защита данных</h2>
   <p>Оператор принимает необходимые правовые, организационные и технические меры для защиты персональных данных от неправомерного доступа, изменения, распространения и уничтожения.</p>
   </div>`;
-  write("politika-konfidentsialnosti/index.html", layout({ title: `Политика конфиденциальности | ${site.name}`, desc: "Политика в отношении обработки персональных данных", path: "/politika-konfidentsialnosti/", body: policy }));
+  write("politika-konfidentsialnosti/index.html", layout({ title: `Политика конфиденциальности | ${site.shopName}`, desc: "Политика в отношении обработки персональных данных", path: "/politika-konfidentsialnosti/", body: policy }));
 
   const consent = `<div class="wrap narrow prose">
   ${crumbs([["/", "Главная"], ["/soglasie/", "Согласие на обработку данных"]])}
@@ -821,7 +821,7 @@ function pageLegal() {
   <p>Согласие действует 3 года или до его отзыва. Отозвать согласие можно, направив письмо на ${esc(site.email)}.</p>
   <p>Подробнее — в <a class="link" href="/politika-konfidentsialnosti/">политике конфиденциальности</a>.</p>
   </div>`;
-  write("soglasie/index.html", layout({ title: `Согласие на обработку персональных данных | ${site.name}`, desc: "Согласие на обработку персональных данных", path: "/soglasie/", body: consent }));
+  write("soglasie/index.html", layout({ title: `Согласие на обработку персональных данных | ${site.shopName}`, desc: "Согласие на обработку персональных данных", path: "/soglasie/", body: consent }));
 }
 
 // ---------- служебные файлы ----------
@@ -854,7 +854,7 @@ function seoFiles() {
   write("feed.yml", `<?xml version="1.0" encoding="UTF-8"?>
 <yml_catalog date="${new Date().toISOString().slice(0, 19)}+05:00">
   <shop>
-    <name>${esc(site.name)}</name><company>${esc(site.legal.name)}</company><url>${site.domain}/</url>
+    <name>${esc(site.shopName)}</name><company>${esc(site.legal.name)}</company><url>${site.domain}/</url>
     <currencies><currency id="RUR" rate="1"/></currencies>
     <categories>${cat.categories.map((c, i) => `<category id="${i + 1}">${esc(c.name)}</category>`).join("")}</categories>
     <offers>
