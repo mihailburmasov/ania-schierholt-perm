@@ -310,9 +310,9 @@ function callbackForm(source, title = "Нужна консультация?", te
 const mapEmbed = `<div class="map"><iframe title="Бутик на карте" src="https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${site.city}, ${site.street}, ${site.mall.replace(/[«»]/g, "")}`)}&amp;z=16" loading="lazy" allowfullscreen></iframe></div>`;
 
 const sizeTable = `<div class="table-wrap"><table class="sizes">
-  <thead><tr><th>Размер бренда (DE)</th>${site.sizes.map((s) => `<th>${s}</th>`).join("")}</tr></thead>
+  <thead><tr><th>Российский размер</th>${site.sizes.map((s) => `<th>${site.sizeRu[s]}</th>`).join("")}</tr></thead>
   <tbody>
-    <tr><th>Российский размер</th>${site.sizes.map((s) => `<td>${site.sizeRu[s]}</td>`).join("")}</tr>
+    <tr><th>Размер бренда (DE)</th>${site.sizes.map((s) => `<td>${s}</td>`).join("")}</tr>
     <tr><th>Обхват груди, см</th>${[80, 84, 88, 92, 96, 100, 104].map((x) => `<td>${x}</td>`).join("")}</tr>
     <tr><th>Обхват талии, см</th>${[64, 68, 72, 76, 80, 84, 88].map((x) => `<td>${x}</td>`).join("")}</tr>
     <tr><th>Обхват бёдер, см</th>${[90, 94, 97, 100, 103, 106, 110].map((x) => `<td>${x}</td>`).join("")}</tr>
@@ -337,7 +337,7 @@ const faq = [
   ["Как оплатить заказ?", "На сайте оплачивать ничего не нужно. После вашего запроса консультант перезвонит, подтвердит наличие и размер и предложит удобный способ оплаты. В бутике можно оплатить на месте после примерки."],
   ["Можно ли сначала примерить?", `Да. Отметьте в запросе «примерка в бутике» — мы отложим вещи в нужных размерах, и вы примерите их в ${site.mall} (${site.addressShort}).`],
   ["Отправляете ли вы в другие города?", "Да, отправляем по всей России. Способ и стоимость доставки консультант рассчитает при звонке."],
-  ["Как подобрать размер?", "У бренда немецкая размерная сетка: 38 DE соответствует 44 российскому. Таблица — на странице «Доставка и оплата». Если сомневаетесь, отметьте «помочь с размером» — консультант уточнит ваши параметры и посадку модели."],
+  ["Как подобрать размер?", "У бренда немецкая размерная сетка, на сайте рядом с российским размером указан немецкий: 44 RU — это 38 DE. Таблица — на странице «Доставка и оплата». Если сомневаетесь, отметьте «помочь с размером» — консультант уточнит ваши параметры и посадку модели."],
   ["Почему не указаны цены?", "Цены появятся на сайте в ближайшее время. Пока консультант сообщит актуальную стоимость при звонке — это займёт пару минут."],
   ["Можно ли вернуть вещь?", "Да, при покупке с доставкой вещь надлежащего качества можно вернуть в течение 7 дней после получения, если сохранены товарный вид и ярлыки. Подробности — на странице «Доставка и оплата»."],
 ];
@@ -540,9 +540,9 @@ function pageProduct(p) {
       </div>
 
       <div class="opt">
-        <div class="opt__label">Размер <span class="note">DE / RU</span><button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
+        <div class="opt__label">Размер <span class="note">RU / DE</span><button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
         <div class="opt__row sizes-row" role="radiogroup" aria-label="Размер">
-          ${site.sizes.map((s) => `<button type="button" class="size" data-size="${s}" role="radio" aria-checked="false">${s}<small>${site.sizeRu[s]}</small></button>`).join("")}
+          ${site.sizes.map((s) => `<button type="button" class="size" data-size="${s}" role="radio" aria-checked="false">${site.sizeRu[s]}<small>${s}</small></button>`).join("")}
           <button type="button" class="size size--help" data-size="help" role="radio" aria-checked="false">Помочь с размером</button>
         </div>
       </div>

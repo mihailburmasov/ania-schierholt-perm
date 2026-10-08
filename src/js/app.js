@@ -68,11 +68,11 @@
     var btn = $(".cart-btn"); if (btn) { btn.classList.remove("is-bump"); void btn.offsetWidth; btn.classList.add("is-bump"); }
     openDrawer();
   }
-  function sizeLabel(s) { return !s ? "" : s === "help" ? "помочь с размером" : s + " DE / " + (SITE.sizeRu[s] || "") + " RU"; }
+  function sizeLabel(s) { return !s ? "" : s === "help" ? "помочь с размером" : (SITE.sizeRu[s] || "") + " RU / " + s + " DE"; }
   function lineHtml(l, i, full) {
     var p = CAT[l.id], v = p.v[l.color] || {};
     var sizeSel = '<select data-line-size="' + i + '" aria-label="Размер"><option value="">Размер…</option>' +
-      SITE.sizes.map(function (s) { return '<option value="' + s + '"' + (l.size === s ? " selected" : "") + ">" + s + " DE / " + SITE.sizeRu[s] + " RU</option>"; }).join("") +
+      SITE.sizes.map(function (s) { return '<option value="' + s + '"' + (l.size === s ? " selected" : "") + ">" + SITE.sizeRu[s] + " RU / " + s + " DE</option>"; }).join("") +
       '<option value="help"' + (l.size === "help" ? " selected" : "") + ">Помочь с размером</option></select>";
     return '<div class="line">' +
       '<a class="line__img" href="' + p.u + "?c=" + l.color + '"><img src="' + v.i + '" alt="" loading="lazy"></a>' +
