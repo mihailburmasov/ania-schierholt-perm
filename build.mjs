@@ -866,12 +866,13 @@ ${offers.join("\n")}
   if (!priced.length) console.log("· feed.yml пустой: у товаров пока нет цен");
 }
 
+// Превью ссылки (og:image) — та же монограмма «A», что в фавиконе, по центру белого поля.
+// Квадратная обрезка в мессенджерах тоже оставляет букву целиком. У страниц товаров превью — фото товара.
 async function ogImage() {
-  const ids = [8, 1, 24];
-  const parts = await Promise.all(ids.map((n) => sharp(path.join(ROOT, "_source/raw", lookList.find((l) => l.n === n).image + ".jpg")).resize(400, 630, { fit: "cover", position: "top" }).toBuffer()));
-  await sharp({ create: { width: 1200, height: 630, channels: 3, background: "#f5f1eb" } })
-    .composite(parts.map((input, i) => ({ input, left: i * 400, top: 0 })))
-    .jpeg({ quality: 82 }).toFile(path.join(DIST, "img/og.jpg"));
+  const glyph = await sharp(path.join(ROOT, "src/brand/favicon-source.png")).trim({ threshold: 40 }).resize({ height: 400 }).toBuffer({ resolveWithObject: true });
+  await sharp({ create: { width: 1200, height: 630, channels: 3, background: "#fff" } })
+    .composite([{ input: glyph.data, left: Math.round((1200 - glyph.info.width) / 2), top: Math.round((630 - glyph.info.height) / 2) }])
+    .jpeg({ quality: 90 }).toFile(path.join(DIST, "img/og.jpg"));
 }
 
 function staticFiles() {
