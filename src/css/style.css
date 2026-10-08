@@ -294,9 +294,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes slide { from { transform: translateX(100%); } }
 .drawer__head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); }
 .drawer__body { flex: 1; overflow: auto; padding: 0 20px; }
-.drawer__body .line { grid-template-columns: 64px 1fr; }
+.drawer__body .line { grid-template-columns: 64px 1fr auto; }
 .drawer__body .line__img img { width: 64px; height: 86px; }
-.drawer__body .line__side { display: none; }
+.drawer__body .line__side > span { display: none; }
+.drawer__clear { justify-self: center; margin: 4px 0 0; }
+.cart-actions { display: flex; justify-content: flex-end; padding: 12px 0; }
 .drawer__foot { padding: 16px 20px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 
 /* модальные окна, лайтбокс */

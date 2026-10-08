@@ -88,14 +88,30 @@
 
   /* выдвижная корзина */
   var drawer = $("[data-drawer]");
+  function renderDrawer() {
+    $("[data-drawer-body]").innerHTML = cart.length ? cart.map(function (l, i) { return lineHtml(l, i, false); }).join("") : '<p class="note" style="padding:20px 0">Корзина пуста</p>';
+    $$(".drawer__foot [href], .drawer__foot [data-cart-clear]").forEach(function (el) { el.hidden = !cart.length; });
+  }
   function openDrawer() {
     if (!drawer || $("[data-cart-lines]")) return; // на странице корзины не показываем
-    $("[data-drawer-body]").innerHTML = cart.length ? cart.map(function (l, i) { return lineHtml(l, i, false); }).join("") : '<p class="note" style="padding:20px 0">Корзина пуста</p>';
+    renderDrawer();
     drawer.hidden = false;
     document.body.style.overflow = "hidden";
   }
   function closeDrawer() { if (drawer) { drawer.hidden = true; document.body.style.overflow = ""; } }
   $$("[data-drawer-close]").forEach(function (b) { b.addEventListener("click", closeDrawer); });
+  if (drawer) $("[data-drawer-body]").addEventListener("click", function (e) {
+    var i = e.target.getAttribute("data-line-rm");
+    if (i === null) return;
+    ecom("remove", [cart[i]]); cart.splice(i, 1); save(); renderDrawer();
+  });
+  $$("[data-cart-clear]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!cart.length || !confirm("Убрать из корзины все вещи?")) return;
+      ecom("remove", cart.slice()); cart = []; save();
+      if (linesBox) renderCart(); else renderDrawer();
+    });
+  });
   $$("[data-cart-open]").forEach(function (a) {
     a.addEventListener("click", function (e) { if (cart.length && !$("[data-cart-lines]") && window.innerWidth > 600) { e.preventDefault(); openDrawer(); } });
   });
@@ -106,6 +122,7 @@
     if (!linesBox) return;
     linesBox.innerHTML = cart.map(function (l, i) { return lineHtml(l, i, true); }).join("");
     $("[data-cart-empty]").hidden = !!cart.length;
+    $("[data-cart-actions]").hidden = !cart.length;
     var form = $('[data-form="order"]'); if (form) form.hidden = !cart.length;
     var total = cart.reduce(function (s, l) { var p = CAT[l.id]; return s + (p.p ? p.p * l.qty : 0); }, 0);
     var unpriced = cart.some(function (l) { return !CAT[l.id].p; });

@@ -235,6 +235,7 @@ ${body}
     <div class="drawer__foot">
       <a class="btn btn--dark btn--block" href="/cart/">Оформить запрос</a>
       <button type="button" class="btn btn--ghost btn--block" data-drawer-close>Продолжить выбор</button>
+      <button type="button" class="link link--sm drawer__clear" data-cart-clear>Очистить корзину</button>
     </div>
   </aside>
 </div>
@@ -729,6 +730,7 @@ function pageCart() {
   <div class="checkout">
     <div>
       <div class="cart-lines" data-cart-lines></div>
+      <div class="cart-actions" data-cart-actions><button type="button" class="link link--sm" data-cart-clear>Очистить корзину</button></div>
       <div class="cart-empty" data-cart-empty hidden>
         <p class="lead">В корзине пока пусто.</p>
         <a class="btn btn--dark" href="/catalog/">Перейти в каталог</a>
