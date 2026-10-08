@@ -1,4 +1,4 @@
-/* Studio 60 — корзина, фильтры, карточка товара, формы, аналитика */
+/* Ania Schierholt в Перми — корзина, фильтры, карточка товара, формы, аналитика */
 (function () {
   "use strict";
   var $ = function (s, r) { return (r || document).querySelector(s); };

@@ -1,8 +1,7 @@
 {
   "_comment": "Единственный источник правды по фактам о магазине. Всё, что помечено TODO, — заглушки: заменить на реальные данные от клиента и пересобрать (npm run build).",
-  "name": "Studio 60",
   "shopName": "Ania Schierholt в Перми",
-  "_shopName_comment": "Название в заголовках вкладок, schema.org и товарном фиде; name (Studio 60) — только в подвале",
+  "_shopName_comment": "Название магазина: подвал, заголовки вкладок, schema.org, товарный фид. Рабочее название Studio 60 больше нигде не используется",
   "tagline": "Ania Schierholt в Перми",
   "brand": "Ania Schierholt",
   "domain": "https://studio60-perm.ru",

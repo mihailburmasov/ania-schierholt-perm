@@ -200,7 +200,7 @@ ${body}
 <footer class="footer"><div class="wrap">
   <div class="footer__grid">
     <div>
-      <div class="logo logo--footer"><span class="logo__name">${esc(site.name)}</span><span class="logo__sub">${esc(site.brand)} · ${esc(site.city)}</span></div>
+      <div class="logo logo--brand logo--footer" role="img" aria-label="${esc(site.shopName)}">${brandLogo}<span class="logo__sub">Бутик в Перми</span></div>
       <p class="footer__text">Монобрендовый бутик немецкой женской одежды ${esc(site.brand)}. Все вещи в наличии в Перми, отправляем по всей России.</p>
     </div>
     <div>
@@ -224,7 +224,7 @@ ${body}
     </div>
   </div>
   <div class="footer__bottom">
-    <span>© ${new Date().getFullYear()} ${esc(site.name)}. ${esc(site.legal.name)}, ИНН ${esc(site.legal.inn)}, ОГРНИП ${esc(site.legal.ogrnip)}</span>
+    <span>© ${new Date().getFullYear()} ${esc(site.shopName)}. ${esc(site.legal.name)}, ИНН ${esc(site.legal.inn)}, ОГРНИП ${esc(site.legal.ogrnip)}</span>
     <div class="footer-bottom-links">
       <a href="/politika-konfidentsialnosti/">Политика конфиденциальности</a>
       <a href="/soglasie/">Согласие на обработку данных</a>
