@@ -388,7 +388,7 @@ function pageHome() {
 </div></section>
 
 <section class="section"><div class="wrap">
-  <div class="section__head"><h2 class="h2">Выбор бутика</h2><a class="link" href="/catalog/">Весь каталог</a></div>
+  <div class="section__head"><h2 class="h2">Хиты сезона</h2><a class="link" href="/catalog/">Весь каталог</a></div>
   <div class="grid">${featured.map((p) => card(p)).join("")}</div>
 </div></section>
 
