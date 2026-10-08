@@ -199,12 +199,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .radio { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; cursor: pointer; }
 .radio input { accent-color: var(--ink); width: 18px; height: 18px; margin: 2px 0 0; }
 .radio small { display: block; color: var(--muted); font-size: 12px; }
-.seg { display: flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-.seg label { flex: 1; position: relative; }
-.seg input { position: absolute; opacity: 0; }
-.seg span { display: block; text-align: center; padding: 11px 6px; font-size: 13px; cursor: pointer; background: #fff; }
-.seg input:checked + span { background: var(--ink); color: var(--bg); }
-.seg input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: -4px; }
 .hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
 .form__msg { margin: 0; font-size: 14px; min-height: 0; }
 .form__msg.is-err { color: var(--err); }

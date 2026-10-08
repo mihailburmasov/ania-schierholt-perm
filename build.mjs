@@ -746,14 +746,6 @@ function pageCart() {
         <label class="radio"><input type="radio" name="delivery" value="Доставка по Перми"><span>Доставка по Перми</span></label>
         <label class="radio"><input type="radio" name="delivery" value="Доставка в другой город России"><span>Доставка в другой город России</span></label>
       </fieldset>
-      <fieldset class="field">
-        <legend>Как с вами связаться</legend>
-        <div class="seg">
-          <label><input type="radio" name="contact" value="Звонок" checked><span>Звонок</span></label>
-          <label><input type="radio" name="contact" value="WhatsApp"><span>WhatsApp</span></label>
-          <label><input type="radio" name="contact" value="Telegram"><span>Telegram</span></label>
-        </div>
-      </fieldset>
       <label class="field"><span>Комментарий</span><textarea name="comment" rows="3" placeholder="Рост, привычный размер, удобное время для звонка"></textarea></label>
       <label class="check"><input type="checkbox" name="consent" value="1" required><span>Даю <a href="/soglasie/" target="_blank">согласие на обработку персональных данных</a> в соответствии с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a></span></label>
       <div class="checkout__total" data-cart-total></div>
