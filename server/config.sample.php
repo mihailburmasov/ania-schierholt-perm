@@ -5,8 +5,8 @@ return [
     // Куда приходят заявки (можно несколько адресов)
     'mail_to'   => ['TODO@example.ru'],
     // От чьего имени письмо (ящик на домене сайта — меньше шанс попасть в спам)
-    'mail_from' => 'no-reply@studio60-perm.ru',
-    'from_name' => 'Studio 60 — сайт',
+    'mail_from' => 'no-reply@example.ru',
+    'from_name' => 'Ania Schierholt Пермь — сайт',
 
     // SMTP. Если host пустой — используется mail() хостинга.
     // Яндекс 360: host smtp.yandex.ru, port 465, secure ssl, пароль приложения.

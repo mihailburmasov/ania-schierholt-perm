@@ -1,10 +1,10 @@
 {
   "_comment": "Единственный источник правды по фактам о магазине. Всё, что помечено TODO, — заглушки: заменить на реальные данные от клиента и пересобрать (npm run build).",
   "shopName": "Ania Schierholt в Перми",
-  "_shopName_comment": "Название магазина: подвал, заголовки вкладок, schema.org, товарный фид. Рабочее название Studio 60 больше нигде не используется",
+  "_shopName_comment": "Название магазина: подвал, заголовки вкладок, schema.org, товарный фид. На сайте — только бренд Ania Schierholt, других названий магазина нет",
   "tagline": "Ania Schierholt в Перми",
   "brand": "Ania Schierholt",
-  "domain": "https://studio60-perm.ru",
+  "domain": "https://example.ru",
   "_domain_todo": "TODO: реальный домен — от него строятся canonical, sitemap, og:url",
   "city": "Пермь",
   "address": "г. Пермь, ул. Ленина, 60, ТЦ «Колизей Atrium»",
@@ -22,17 +22,17 @@
   "whatsapp": "",
   "telegram": "",
   "_messengers_todo": "TODO: номер WhatsApp в формате 79xxxxxxxxx и username Telegram без @; пустые — кнопки скрыты",
-  "email": "info@studio60-perm.ru",
-  "_email_todo": "TODO: почта для заявок (куда уходят запросы — задаётся в config.php)",
+  "email": "info@",
+  "_email_todo": "TODO: заглушка — реальная почта магазина (заявки уходят на адрес из config.php)",
   "legal": {
-    "name": "ИП Фамилия Имя Отчество",
-    "inn": "000000000000",
-    "ogrnip": "000000000000000",
-    "_todo": "TODO: реквизиты продавца — обязательны для дистанционной продажи и модерации Яндекс Директа"
+    "name": "ИП",
+    "inn": "",
+    "ogrnip": "",
+    "_todo": "TODO: «ИП Фамилия И. О.» или «ООО «Название»», ИНН, ОГРНИП/ОГРН (пустые не выводятся) — обязательны для дистанционной продажи и модерации Яндекс Директа"
   },
   "metrikaId": "",
   "_metrikaId_todo": "TODO: номер счётчика Яндекс Метрики; пусто — счётчик не подключается",
-  "creditSlug": "studio60-perm",
+  "creditSlug": "ania-schierholt-perm",
   "sizes": [
     "34",
     "36",

@@ -32,6 +32,10 @@ const plural = (n, one, few, many) => {
 };
 const rub = (n) => n.toLocaleString("ru-RU").replace(/ /g, " ") + " ₽";
 const priceText = (p) => (p.price ? rub(p.price) : "Цена по запросу");
+// Реквизиты продавца: ИНН/ОГРН выводятся, только когда заполнены (до этого — просто «ИП»/«ООО»)
+const legalIds = [site.legal.inn && `ИНН ${site.legal.inn}`, site.legal.ogrnip && `${/^ООО/.test(site.legal.name) ? "ОГРН" : "ОГРНИП"} ${site.legal.ogrnip}`].filter(Boolean).join(", ");
+const legalFull = site.legal.name + (legalIds ? `, ${legalIds}` : "");
+const DOMAIN_STUB = "https://example.ru"; // условный домен, пока нет настоящего
 const credit = `https://sitomika.ru/?utm_source=${site.creditSlug}&amp;utm_medium=footer&amp;utm_campaign=client-sites`;
 
 // ---------- фото ----------
@@ -224,7 +228,7 @@ ${body}
     </div>
   </div>
   <div class="footer__bottom">
-    <span>© ${new Date().getFullYear()} ${esc(site.shopName)}. ${esc(site.legal.name)}, ИНН ${esc(site.legal.inn)}, ОГРНИП ${esc(site.legal.ogrnip)}</span>
+    <span>© ${new Date().getFullYear()} ${esc(site.shopName)}. ${esc(legalFull)}</span>
     <div class="footer-bottom-links">
       <a href="/politika-konfidentsialnosti/">Политика конфиденциальности</a>
       <a href="/soglasie/">Согласие на обработку данных</a>
@@ -717,7 +721,7 @@ function pageDelivery() {
   <p>При покупке в бутике обмен вещи надлежащего качества возможен в течение 14 дней, если она не была в употреблении и сохранены ярлыки (ст. 25 того же закона).</p>
   <p>Чтобы оформить возврат или обмен, позвоните по телефону <a href="tel:${site.phoneHref}">${esc(site.phone)}</a> или напишите на <a href="mailto:${esc(site.email)}">${esc(site.email)}</a>.</p>
   <h2 class="h3">Продавец</h2>
-  <p>${esc(site.legal.name)}, ИНН ${esc(site.legal.inn)}, ОГРНИП ${esc(site.legal.ogrnip)}. Адрес: ${esc(site.address)}.</p>
+  <p>${esc(legalFull)}. Адрес: ${esc(site.address)}.</p>
   </div>
 </div>`;
   write("delivery/index.html", layout({
@@ -787,7 +791,7 @@ function page404() {
 }
 
 function pageLegal() {
-  const op = `${site.legal.name} (ИНН ${site.legal.inn}, ОГРНИП ${site.legal.ogrnip}), адрес: ${site.address}, e-mail: ${site.email}`;
+  const op = `${site.legal.name}${legalIds ? ` (${legalIds})` : ""}, адрес: ${site.address}, e-mail: ${site.email}`;
   const policy = `<div class="wrap narrow prose">
   ${crumbs([["/", "Главная"], ["/politika-konfidentsialnosti/", "Политика конфиденциальности"]])}
   <h1 class="h1 h1--page">Политика в отношении обработки персональных данных</h1>
@@ -815,7 +819,7 @@ function pageLegal() {
   const consent = `<div class="wrap narrow prose">
   ${crumbs([["/", "Главная"], ["/soglasie/", "Согласие на обработку данных"]])}
   <h1 class="h1 h1--page">Согласие на обработку персональных данных</h1>
-  <p>Отправляя форму на сайте ${esc(site.domain.replace(/^https?:\/\//, ""))}, я свободно, своей волей и в своём интересе даю согласие ${esc(op)} на обработку моих персональных данных: имени, номера телефона, города, сведений о выбранных товарах, текста комментария, а также технических данных (cookie, IP-адрес, источник перехода).</p>
+  <p>Отправляя форму на сайте${site.domain === DOMAIN_STUB ? "" : ` ${esc(site.domain.replace(/^https?:\/\//, ""))}`}, я свободно, своей волей и в своём интересе даю согласие ${esc(op)} на обработку моих персональных данных: имени, номера телефона, города, сведений о выбранных товарах, текста комментария, а также технических данных (cookie, IP-адрес, источник перехода).</p>
   <p>Цели обработки: обработка моего запроса, обратная связь, консультация по товарам, оформление и доставка покупки.</p>
   <p>Действия с данными: сбор, запись, систематизация, накопление, хранение, уточнение, использование, передача службам доставки в объёме, необходимом для доставки, обезличивание, блокирование, удаление, уничтожение — с использованием средств автоматизации и без них.</p>
   <p>Согласие действует 3 года или до его отзыва. Отозвать согласие можно, направив письмо на ${esc(site.email)}.</p>
@@ -937,8 +941,9 @@ function applyBase() {
 function todoReport() {
   const t = [];
   if (/000-00-00|0000000/.test(site.phone + site.phoneHref)) t.push("телефон — заглушка");
-  if (/^0+$/.test(site.legal.inn) || /^0+$/.test(site.legal.ogrnip) || /Фамилия/.test(site.legal.name)) t.push("реквизиты продавца (ИП, ИНН, ОГРНИП)");
-  if (site.domain === "https://studio60-perm.ru") t.push("домен (сейчас условный studio60-perm.ru)");
+  if (!site.legal.inn || !site.legal.ogrnip || /^0+$/.test(site.legal.inn + site.legal.ogrnip)) t.push("реквизиты продавца (ИП, ИНН, ОГРНИП)");
+  if (site.domain === DOMAIN_STUB) t.push("домен (сейчас условный example.ru)");
+  if (!/@.+\./.test(site.email)) t.push("почта — заглушка info@");
   if (!site.metrikaId) t.push("счётчик Яндекс Метрики не подключён");
   if (!site.addressFloor) t.push("этаж/павильон в ТЦ");
   if (Object.keys(site).some((k) => k === "_hours_todo")) t.push("часы работы (проверить и убрать _hours_todo)");

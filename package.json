@@ -1,7 +1,7 @@
 {
   "name": "studio60-perm",
   "version": "1.0.0",
-  "description": "Сайт-каталог Ania Schierholt в Перми (Studio 60)",
+  "description": "Сайт-каталог Ania Schierholt в Перми",
   "scripts": {
     "build": "node build.mjs",
     "serve": "php -S localhost:8000 -t dist",
