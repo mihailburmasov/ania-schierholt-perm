@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yml_catalog date="2026-10-09T05:24:31+05:00">
+  <shop>
+    <name>Ania Schierholt в Перми</name><company>ИП</company><url>https://example.ru/</url>
+    <currencies><currency id="RUR" rate="1"/></currencies>
+    <categories><category id="1">Жакеты и куртки</category><category id="2">Блузы и рубашки</category><category id="3">Пальто</category><category id="4">Жилеты</category><category id="5">Юбки</category><category id="6">Топы</category><category id="7">Брюки</category></categories>
+    <offers>
+
+    </offers>
+  </shop>
+</yml_catalog>
