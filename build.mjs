@@ -91,7 +91,7 @@ const products = cat.products.map((p) => {
     price: p.price ?? null,
     variants: p.variants.map((v) => ({ ...v, looks: [], images: [] })),
   };
-});
+}).sort((a, b) => cat.categories.indexOf(a.category) - cat.categories.indexOf(b.category)); // «Все» — в порядке категорий
 const byArticle = new Map(); // "HO 3389/69 anthra" → [product, variant]
 for (const p of products) for (const v of p.variants) byArticle.set(`${p.article} ${v.color}`, [p, v]);
 

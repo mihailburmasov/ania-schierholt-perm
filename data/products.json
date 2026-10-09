@@ -7,9 +7,9 @@
   },
 
   "categories": [
-    { "id": "bryuki", "name": "Брюки", "type": "HO", "seoTitle": "Женские брюки Ania Schierholt" },
     { "id": "zhakety", "name": "Жакеты и куртки", "type": "JA", "seoTitle": "Женские жакеты и куртки Ania Schierholt" },
     { "id": "bluzy", "name": "Блузы и рубашки", "type": "BL", "seoTitle": "Женские блузы и рубашки Ania Schierholt" },
+    { "id": "bryuki", "name": "Брюки", "type": "HO", "seoTitle": "Женские брюки Ania Schierholt" },
     { "id": "palto", "name": "Пальто", "type": "MA", "seoTitle": "Женские пальто Ania Schierholt" },
     { "id": "zhilety", "name": "Жилеты", "type": "WE", "seoTitle": "Стёганые жилеты Ania Schierholt" },
     { "id": "yubki", "name": "Юбки", "type": "RO", "seoTitle": "Юбки Ania Schierholt" },
