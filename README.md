@@ -3,7 +3,7 @@
 Сайт-каталог монобрендового бутика Ania Schierholt (Пермь, ул. Ленина, 60, ТЦ «Колизей Atrium»).
 Работает как интернет-магазин без оплаты: покупательница выбирает модель, цвет, размер, кладёт вещи в корзину и отправляет запрос. Запрос приходит на почту (и, если настроить, в Telegram), консультант перезванивает.
 
-Название магазина на сайте — «Ania Schierholt в Перми» (поле `shopName` в `data/site.json`). Рабочее название «Studio 60» убрано полностью (2026-10-08–09): на сайте, в почте, домене-заглушке, политике и согласии — только бренд Ania Schierholt. Оно осталось лишь в имени репозитория и адресе демо (клиенту не показывается).
+Название магазина на сайте — «Ania Schierholt в Перми» (поле `shopName` в `data/site.json`). Рабочее название «Studio 60» убрано полностью (2026-10-08–09): на сайте, в почте, домене-заглушке, политике и согласии — только бренд Ania Schierholt. Репозиторий и адрес демо тоже переименованы в `ania-schierholt-perm` (2026-10-09).
 
 ## Устройство
 
@@ -72,9 +72,9 @@ https://imagebank-ania-schierholt.px.media/overview — открытый пор�
 
 ## Демо на GitHub Pages
 
-`npm run deploy:demo` собирает сайт с `BASE=/studio60-perm` и публикует его в ветку `gh-pages` → `https://mihailburmasov.github.io/studio60-perm/`. (Автосборка через GitHub Actions не подключена: токену gh нужно право `workflow` — `gh auth refresh -s workflow`.) Это витрина для согласования с клиентом: закрыта от индексации (noindex, robots.txt), а форма заявки вместо отправки говорит, что это демо, и показывает телефон — на Pages нет PHP.
+`npm run deploy:demo` собирает сайт с `BASE=/ania-schierholt-perm` и публикует его в ветку `gh-pages` → `https://mihailburmasov.github.io/ania-schierholt-perm/`. (Автосборка через GitHub Actions не подключена: токену gh нужно право `workflow` — `gh auth refresh -s workflow`.) Это витрина для согласования с клиентом: закрыта от индексации (noindex, robots.txt), а форма заявки вместо отправки говорит, что это демо, и показывает телефон — на Pages нет PHP.
 
-Локально собрать так же: `MSYS_NO_PATHCONV=1 BASE=/studio60-perm npm run build` (переменная `MSYS_NO_PATHCONV` нужна только в Git Bash на Windows).
+Локально собрать так же: `MSYS_NO_PATHCONV=1 BASE=/ania-schierholt-perm npm run build` (переменная `MSYS_NO_PATHCONV` нужна только в Git Bash на Windows).
 
 ## Выкладка на боевой хостинг
 

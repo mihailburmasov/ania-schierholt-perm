@@ -2,8 +2,8 @@
 # Демо на GitHub Pages: собирает сайт с префиксом подпапки и публикует dist/ в ветку gh-pages.
 # Запуск из корня проекта: npm run deploy:demo
 set -euo pipefail
-REPO_NAME="studio60-perm"
-export MSYS_NO_PATHCONV=1   # Git Bash на Windows иначе превращает /studio60-perm в путь C:/...
+REPO_NAME="ania-schierholt-perm"
+export MSYS_NO_PATHCONV=1   # Git Bash на Windows иначе превращает /ania-schierholt-perm в путь C:/...
 BASE="/$REPO_NAME" npm run build
 TMP=$(mktemp -d)
 cp -r dist/. "$TMP/"

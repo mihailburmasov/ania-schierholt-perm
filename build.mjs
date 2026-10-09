@@ -14,7 +14,7 @@ const brandLogo = fs.readFileSync(path.join(ROOT, "src/brand/ania-schierholt-log
   .replace("<svg ", '<svg class="logo__mark" role="img" aria-hidden="true" focusable="false" ');
 const { looks } = read("data/looks.json");
 const VERSION = Date.now().toString(36);
-// BASE — подпапка, если сайт лежит не в корне домена (демо на GitHub Pages: BASE=/studio60-perm).
+// BASE — подпапка, если сайт лежит не в корне домена (демо на GitHub Pages: BASE=/ania-schierholt-perm).
 // В этом режиме сайт закрыт от индексации, а форма предупреждает, что заявки не отправляются.
 const BASE = (process.env.BASE || "").replace(/\/$/, "");
 const PREVIEW = !!BASE;
