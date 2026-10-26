@@ -412,7 +412,8 @@ function pageHome() {
   const editorial = [L(11), L(16)];
   const body = `
 <section class="hero">
-  <div class="hero__media">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026: стёганый жилет и блуза цвета антрацит", { sizes: "100vw", eager: true })}</div>
+  <div class="hero__media hero__media--m">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026: стёганый жилет и блуза цвета антрацит", { sizes: "100vw", eager: true })}</div>
+  <div class="hero__media hero__media--wide">${ed.hero.wide.map(lookById).map((l) => `<span>${picture(l.img, `Образ ${l.n}: ${l.items.map((it) => it.p.title).join(", ")}`, { sizes: "34vw" })}</span>`).join("")}</div>
   <div class="wrap hero__in">
     <p class="kicker">${esc(ed.hero.kicker)}</p>
     <h1 class="hero__title">${esc(site.brand)} <span>в Перми</span></h1>
