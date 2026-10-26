@@ -166,8 +166,50 @@
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     $$("[data-modal]").forEach(function (m) { m.hidden = true; });
-    closeDrawer(); closeLightbox();
+    closeDrawer(); closeLightbox(); closeSearch();
   });
+
+  /* ---------- шапка на главной: прозрачная над фото, плотная после прокрутки ---------- */
+  var header = $("[data-header]");
+  if (header && document.body.classList.contains("page-home")) {
+    var onScroll = function () { header.classList.toggle("is-solid", window.scrollY > 40); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ---------- поиск по коллекции: название, артикул, категория, цвет ---------- */
+  var search = $("[data-search]"), sInput = $("[data-search-input]"), sRes = $("[data-search-res]");
+  var norm = function (s) { return String(s).toLowerCase().replace(/ё/g, "е"); };
+  var index = Object.keys(CAT).map(function (id) {
+    var p = CAT[id];
+    var colors = Object.keys(p.v).map(function (c) { return p.v[c].n; }).join(" ");
+    return { id: id, p: p, hay: norm([p.t, p.a, p.a.replace(/\s|\//g, ""), p.c, colors].join(" ")) };
+  });
+  function runSearch() {
+    var q = norm(sInput.value).trim();
+    $("[data-search-hint]").hidden = !!q;
+    if (!q) { sRes.innerHTML = ""; return; }
+    var words = q.split(/\s+/);
+    var hits = index.filter(function (x) { return words.every(function (w) { return x.hay.indexOf(w) >= 0; }); });
+    sRes.innerHTML = hits.length ? hits.slice(0, 24).map(function (x) {
+      // если в запросе есть цвет — показываем вещь в этом цвете
+      var c = Object.keys(x.p.v).filter(function (k) { return words.some(function (w) { return norm(x.p.v[k].n).indexOf(w) >= 0; }); })[0] || Object.keys(x.p.v)[0];
+      var v = x.p.v[c];
+      return '<a href="' + x.p.u + "?c=" + c + '"><img src="' + v.i + '" alt="" loading="lazy">' + esc(x.p.t) + "<small>" + esc(x.p.a) + " · " + esc(v.n) + "</small></a>";
+    }).join("") : '<p class="search__empty">Ничего не нашлось. Попробуйте «брюки», «жакет» или цвет — «антрацит».</p>';
+  }
+  function openSearch() {
+    if (!search) return;
+    search.hidden = false; document.body.style.overflow = "hidden";
+    sInput.focus();
+  }
+  function closeSearch() { if (search && !search.hidden) { search.hidden = true; document.body.style.overflow = ""; } }
+  if (search) {
+    $$("[data-search-open]").forEach(function (b) { b.addEventListener("click", openSearch); });
+    $$("[data-search-close]").forEach(function (b) { b.addEventListener("click", closeSearch); });
+    $$("[data-search-q]").forEach(function (b) { b.addEventListener("click", function () { sInput.value = b.getAttribute("data-search-q"); runSearch(); sInput.focus(); }); });
+    sInput.addEventListener("input", runSearch);
+  }
 
   /* ---------- лайтбокс ---------- */
   var lb, lbList = [], lbIdx = 0;

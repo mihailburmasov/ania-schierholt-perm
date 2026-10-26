@@ -13,6 +13,7 @@ const cat = read("data/products.json");
 const brandLogo = fs.readFileSync(path.join(ROOT, "src/brand/ania-schierholt-logo.svg"), "utf8").trim()
   .replace("<svg ", '<svg class="logo__mark" role="img" aria-hidden="true" focusable="false" ');
 const { looks } = read("data/looks.json");
+const ed = read("data/editorial.json"); // первый экран, философия бренда, материалы, капсулы
 const VERSION = Date.now().toString(36);
 // BASE — подпапка, если сайт лежит не в корне домена (демо на GitHub Pages: BASE=/ania-schierholt-perm).
 // В этом режиме сайт закрыт от индексации, а форма предупреждает, что заявки не отправляются.
@@ -42,12 +43,15 @@ const credit = `https://sitomika.ru/?utm_source=${site.creditSlug}&amp;utm_mediu
 // Каждое исходное фото режется на несколько ширин WebP; уже готовые файлы не пересобираются.
 const imgCache = new Map();
 const usedImg = new Set(); // всё, что сгенерировано в этой сборке; остальное из dist/img удаляется
-async function img(srcRel, widths) {
-  const key = srcRel + widths.join();
+// crop — доли кадра [слева, сверху, ширина, высота]: крупные планы ткани для блока «Материалы»
+async function img(srcRel, widths, crop) {
+  const key = srcRel + widths.join() + (crop || "");
   if (imgCache.has(key)) return imgCache.get(key);
   const src = path.join(ROOT, "_source/raw", srcRel + ".jpg");
-  const meta = await sharp(src).metadata();
-  const base = srcRel.replace(/\//g, "-");
+  const full = await sharp(src).metadata();
+  const box = crop && { left: Math.round(crop[0] * full.width), top: Math.round(crop[1] * full.height), width: Math.round(crop[2] * full.width), height: Math.round(crop[3] * full.height) };
+  const meta = box || full;
+  const base = srcRel.replace(/\//g, "-") + (box ? `-c${box.left}x${box.top}` : "");
   const out = [];
   for (const w of widths) {
     const width = Math.min(w, meta.width);
@@ -55,7 +59,7 @@ async function img(srcRel, widths) {
     const dest = path.join(DIST, rel);
     if (!fs.existsSync(dest) || fs.statSync(dest).mtimeMs < fs.statSync(src).mtimeMs) {
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      await sharp(src).resize({ width }).webp({ quality: 80 }).toFile(dest);
+      await (box ? sharp(src).extract(box) : sharp(src)).resize({ width }).webp({ quality: 80 }).toFile(dest);
     }
     out.push({ url: "/" + rel, w: width });
     usedImg.add(rel);
@@ -99,20 +103,23 @@ const products = cat.products.map((p) => {
 const byArticle = new Map(); // "HO 3389/69 anthra" → [product, variant]
 for (const p of products) for (const v of p.variants) byArticle.set(`${p.article} ${v.color}`, [p, v]);
 
-const lookList = looks.map((l, i) => ({
-  ...l,
-  n: i + 1,
-  items: l.items.map((a) => {
-    const m = a.match(/^(\w+ \d+\/\d+) (\w+)$/);
-    const hit = m && byArticle.get(`${m[1]} ${deToId[m[2].toLowerCase()]}`);
-    if (!hit) console.warn("! артикул из образа не найден в каталоге:", a, "→", l.id);
-    return hit ? { p: hit[0], v: hit[1] } : null;
-  }).filter(Boolean),
-}));
+// «HO 3389/69 Anthra» → { p, v }; where — для предупреждения, если артикула нет в каталоге
+const resolveItems = (list, where) => list.map((a) => {
+  const m = a.match(/^(\w+ \d+\/\d+) (\w+)$/);
+  const hit = m && byArticle.get(`${m[1]} ${deToId[m[2].toLowerCase()]}`);
+  if (!hit) console.warn("! артикул не найден в каталоге:", a, "→", where);
+  return hit ? { p: hit[0], v: hit[1] } : null;
+}).filter(Boolean);
+const lookList = looks.map((l, i) => ({ ...l, n: i + 1, items: resolveItems(l.items, l.id) }));
 for (const l of lookList) for (const it of l.items) it.v.looks.push(l);
+const lookById = (id) => lookList.find((l) => l.id === id) || console.warn("! образ не найден:", id);
+const capsules = ed.capsules.map((c) => ({ ...c, url: `/capsules/${c.id}/`, cover: lookById(c.cover), looks: c.looks.map(lookById).filter(Boolean), items: resolveItems(c.items, c.id) }));
+const materials = ed.materials.items.map((m) => ({ ...m, item: resolveItems([m.item], "материалы")[0] }));
 
 async function prepareImages() {
   for (const l of lookList) l.img = await img(l.image, LOOK_W);
+  ed.hero.img = await img(ed.hero.image, LOOK_W);
+  for (const m of materials) m.img = await img(m.image, [480, 760], m.crop);
   for (const p of products)
     for (const v of p.variants) {
       // сначала образы, где вещей меньше (сама вещь виднее); cover в products.json — ручной выбор обложки
@@ -126,10 +133,10 @@ async function prepareImages() {
 
 // ---------- общий шаблон ----------
 const nav = [
-  ["/catalog/", "Каталог"],
-  ["/looks/", "Образы"],
+  ["/catalog/", "Коллекция"],
+  ["/capsules/", "Капсулы"],
+  ["/about/", "О бренде"],
   ["/boutique/", "Бутик"],
-  ["/delivery/", "Доставка и оплата"],
 ];
 const messengerLinks = (cls = "") => [
   site.whatsapp && `<a class="${cls}" href="https://wa.me/${esc(site.whatsapp)}" target="_blank" rel="noopener" data-goal="messenger_click">WhatsApp</a>`,
@@ -165,35 +172,36 @@ ${noindex || PREVIEW ? '<meta name="robots" content="noindex">' : ""}
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/open-sans-cyrillic-300-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css?v=${VERSION}">
 ${ld}
 ${metrika}
 </head>
 <body class="${main}">
 <a class="skip" href="#main">Перейти к содержимому</a>
-<div class="topbar"><div class="wrap topbar__in">
-  <span>Все вещи в наличии · Примерка в ${site.mall} · Доставка по России</span>
-  <a href="tel:${site.phoneHref}" data-goal="phone_click">${esc(site.phone)}</a>
-</div></div>
-<header class="header"><div class="wrap header__in">
+<header class="header" data-header><div class="wrap header__in">
   <button class="burger" type="button" aria-label="Меню" aria-expanded="false" data-burger><span></span><span></span></button>
-  <a class="logo logo--brand" href="/" aria-label="${esc(site.brand)} в Перми — на главную">
-    ${brandLogo}
-    <span class="logo__sub">Бутик в Перми</span>
-  </a>
   <nav class="nav" aria-label="Основное меню" data-nav>
     ${nav.map(([h, t]) => `<a href="${h}"${pagePath.startsWith(h) ? ' aria-current="page"' : ""}>${t}</a>`).join("")}
     <div class="nav__mobile-extra">
+      <a href="/looks/">Образы сезона</a>
+      <a href="/delivery/">Доставка и оплата</a>
       <a href="tel:${site.phoneHref}" data-goal="phone_click">${esc(site.phone)}</a>
       ${messengerLinks()}
       <span>${esc(site.addressShort)}</span>
     </div>
   </nav>
+  <a class="logo logo--brand" href="/" aria-label="${esc(site.brand)} в Перми — на главную">
+    ${brandLogo}
+    <span class="logo__sub">Бутик в Перми</span>
+  </a>
   <div class="header__actions">
     <a class="header__phone" href="tel:${site.phoneHref}" data-goal="phone_click">${esc(site.phone)}</a>
+    <button class="icon-btn search-btn" type="button" aria-label="Поиск" data-search-open>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+    </button>
     <a class="cart-btn" href="/cart/" aria-label="Корзина" data-cart-open>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
       <span class="cart-btn__count" data-cart-count hidden>0</span>
     </a>
   </div>
@@ -213,6 +221,8 @@ ${body}
     </div>
     <div>
       <h3 class="footer__h">Покупателям</h3>
+      <a href="/about/">О бренде</a>
+      <a href="/capsules/">Капсулы</a>
       <a href="/looks/">Образы сезона</a>
       <a href="/delivery/">Доставка, оплата, возврат</a>
       <a href="/delivery/#sizes">Таблица размеров</a>
@@ -237,6 +247,23 @@ ${body}
   </div>
   <p class="footer__note">${esc(site.brand)} — зарегистрированная торговая марка её правообладателя. Сайт принадлежит независимому продавцу. Информация на сайте не является публичной офертой; наличие, цену и размер подтверждает консультант.</p>
 </div></footer>
+
+<div class="search" data-search hidden>
+  <div class="search__bg" data-search-close></div>
+  <div class="search__panel" role="dialog" aria-modal="true" aria-label="Поиск по коллекции">
+    <div class="wrap">
+      <div class="search__bar">
+        <input type="search" data-search-input placeholder="Жакет, брюки, антрацит, HO 3389…" aria-label="Поиск по коллекции" autocomplete="off">
+        <button type="button" class="icon-btn" data-search-close aria-label="Закрыть поиск">✕</button>
+      </div>
+      <div class="search__hint" data-search-hint>
+        <span>Часто ищут:</span>
+        ${["Брюки", "Жакет", "Блуза", "Жилет", "Пальто", "Антрацит", "Ракушка", "Каперс"].map((q) => `<button type="button" class="link" data-search-q="${q}">${q}</button>`).join("")}
+      </div>
+      <div class="search__res" data-search-res></div>
+    </div>
+  </div>
+</div>
 
 <div class="drawer" data-drawer hidden>
   <div class="drawer__bg" data-drawer-close></div>
@@ -266,20 +293,20 @@ ${body}
 // ---------- компоненты ----------
 const swatch = (c, extra = "") => `<span class="sw" style="--c:${cat.colors[c]?.hex || "#ccc"}" title="${esc(colorName(c))}"${extra}></span>`;
 
+// Одна крупная фотография, как у бренда; opts.color — показать конкретный цвет (капсулы)
 function card(p, opts = {}) {
-  const v = p.variants[0];
-  const [a, b] = v.images;
+  const v = p.variants.find((x) => x.color === opts.color) || p.variants[0];
+  const href = opts.color ? `${p.url}?c=${v.color}` : p.url;
+  const [a] = v.images;
   const colors = p.variants.map((x) => x.color);
   return `<article class="card" data-card data-colors="${colors.join(" ")}" data-short="${p.short ? 1 : 0}" data-coll="${p.collections.join(" ")}" data-price="${p.price || ""}">
-  <a class="card__media" href="${p.url}">
-    ${a ? picture(a, `${p.title} ${p.article}, ${colorName(v.color)}`, { sizes: opts.sizes }) : ""}
-    ${b ? picture(b, "", { sizes: opts.sizes, cls: "card__alt" }) : ""}
-    <span class="card__tag">В наличии</span>
+  <a class="card__media" href="${href}">
+    ${a ? picture(a, `${p.title} ${p.article}, ${colorName(v.color)}`, { sizes: opts.sizes || "(max-width: 900px) 50vw, 33vw" }) : ""}
   </a>
   <div class="card__body">
-    <div class="card__sw">${colors.map((c) => swatch(c)).join("")}${p.short ? '<span class="card__opt">есть укороченные</span>' : ""}</div>
-    <h3 class="card__title"><a href="${p.url}">${esc(p.title)}</a></h3>
-    <div class="card__meta"><span>${esc(p.article)}</span><span class="card__price">${priceText(p)}</span></div>
+    <h3 class="card__title"><a href="${href}">${esc(p.title)}</a></h3>
+    <div class="card__meta"><span class="card__price">${priceText(p)}</span><span class="card__sw">${colors.map((c) => swatch(c)).join("")}</span></div>
+    ${p.short ? '<p class="card__opt">есть укороченные</p>' : ""}
   </div>
 </article>`;
 }
@@ -305,7 +332,7 @@ const trust = `<ul class="trust">
 </ul>`;
 
 function callbackForm(source, title = "Нужна консультация?", text = "Оставьте телефон — подскажем по размеру, сочетаниям и наличию, пришлём дополнительные фото.") {
-  return `<section class="callback"><div class="wrap callback__in">
+  return `<section class="callback" id="consult"><div class="wrap callback__in">
   <div><h2 class="h2">${esc(title)}</h2><p class="lead">${esc(text)}</p></div>
   <form class="form form--inline" data-form="callback" data-source="${esc(source)}" novalidate>
     <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -355,100 +382,195 @@ const faq = [
 const faqHtml = `<div class="faq">${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div>`;
 const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
 
+// ---------- блоки «тихой роскоши»: тексты и подборки — в data/editorial.json ----------
+const nItems = (n) => `${n} ${plural(n, "вещь", "вещи", "вещей")}`;
+const capsuleTile = (c, sizes = "(max-width: 700px) 80vw, 25vw") => `<a class="capsule" href="${c.url}">
+  <span class="capsule__img">${picture(c.cover.img, `Капсула «${c.title}»`, { sizes })}</span>
+  <span class="capsule__txt"><span class="kicker">Капсула · ${nItems(c.items.length)}</span><b>${esc(c.title)}</b><span>${esc(c.lead)}</span></span>
+</a>`;
+const [credoDe, credoRu] = ed.philosophy.credo.split(" — ");
+const manifest = (h = "h2") => `<div class="manifest">
+  <p class="kicker">${esc(ed.philosophy.kicker)}</p>
+  <${h} class="quote">${esc(ed.philosophy.quote)}</${h}>
+  <div class="manifest__text">${ed.philosophy.text.map((t) => `<p>${esc(t)}</p>`).join("")}</div>
+  <p class="credo"><span lang="de">${esc(credoDe)}</span> — ${esc(credoRu)}<small>${esc(ed.philosophy.credoBy)}</small></p>
+</div>`;
+const materialsBlock = () => `<section class="section"><div class="wrap">
+  <div class="section__head section__head--center"><div><p class="kicker">${esc(ed.materials.kicker)}</p><h2 class="h2">${esc(ed.materials.title)}</h2></div></div>
+  <div class="materials">
+    ${materials.map((m) => `<figure class="material">
+      <a href="${m.item ? `${m.item.p.url}?c=${m.item.v.color}` : "/catalog/"}">${picture(m.img, `${m.title}: ${m.item ? m.item.p.title : ""}`, { sizes: "(max-width: 700px) 80vw, 25vw" })}</a>
+      <figcaption><b>${esc(m.title)}</b><span>${esc(m.text)}</span></figcaption>
+    </figure>`).join("")}
+  </div>
+</div></section>`;
+const dnaList = `<ol class="dna">${ed.dna.map(([t, d]) => `<li><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join("")}</ol>`;
+
 function pageHome() {
   const L = (n) => lookList.find((l) => l.n === n);
-  const heroLooks = [L(8), L(1), L(24)];
-  const capsules = [
-    ["caper", "Каперс", "Глубокий оливковый: жакеты, юбка миди, длинный стёганый жилет", L(3)],
-    ["muschel", "Ракушка", "Светлый бежевый: пальто-халат, брюки на мягком поясе, белые блузы", L(11)],
-    ["anthra", "Антрацит", "Графит для города: костюмы, стёганые жилеты, широкие брюки", L(25)],
-  ];
-  const catTiles = cat.categories
-    .map((c) => ({ c, list: products.filter((p) => p.category === c) }))
-    .filter((x) => x.list.length);
-  const featured = ["ho-3389-69", "ma-3362-69", "ja-3351-66", "we-3360-49", "bl-3337-42", "ja-3358-69", "ro-3396-66", "ho-3378-69"].map((id) => products.find((p) => p.id === id));
+  const featured = ["ma-3362-69", "ja-3351-66", "bl-3337-42", "we-3360-49", "ja-3358-69", "ho-3389-69"].map((id) => products.find((p) => p.id === id));
+  const editorial = [L(11), L(16)];
   const body = `
-<section class="hero"><div class="wrap hero__in">
-  <div class="hero__text">
-    <p class="kicker">Новая коллекция · Осень–зима 2026</p>
-    <h1 class="h1">${esc(site.brand)}<br><em>в Перми</em></h1>
-    <p class="lead"><span class="hide-m">Немецкая женская одежда из Штутгарта: мягкие костюмы, широкие брюки, стёганые жилеты в спокойных цветах сезона. </span>Все вещи в наличии в бутике в ${site.mall}. Выберите онлайн — консультант перезвонит, поможет с размером и отправит по России.</p>
-    <div class="hero__cta">
-      <a class="btn btn--dark" href="/catalog/">Смотреть каталог</a>
-      <a class="btn btn--ghost" href="/boutique/">Примерить в бутике</a>
-    </div>
+<section class="hero">
+  <div class="hero__media">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026: стёганый жилет и блуза цвета антрацит", { sizes: "100vw", eager: true })}</div>
+  <div class="wrap hero__in">
+    <p class="kicker">${esc(ed.hero.kicker)}</p>
+    <h1 class="hero__title">${esc(site.brand)} <span>в Перми</span></h1>
+    <p class="hero__tag">${esc(ed.hero.tagline)}</p>
+    <a class="btn btn--light" href="/catalog/">Смотреть коллекцию</a>
   </div>
-  <div class="hero__media">
-    ${heroLooks.map((l, i) => `<a href="/looks/#${l.id}" class="hero__img hero__img--${i + 1}">${picture(l.img, "Образ из коллекции Ania Schierholt осень–зима 2026", { sizes: i === 0 ? "(max-width: 900px) 60vw, 45vw" : "(max-width: 900px) 40vw, 25vw", eager: i === 0 })}</a>`).join("")}
-  </div>
-</div></section>
-<section class="band"><div class="wrap">${trust}</div></section>
+</section>
 
-<section class="section"><div class="wrap">
-  <div class="section__head"><h2 class="h2">Каталог</h2><a class="link" href="/catalog/">Все вещи · ${products.length}</a></div>
-  <div class="cats">
-    ${catTiles.map(({ c, list }) => `<a class="cat" href="/catalog/${c.id}/">${list[0].variants[0].images[0] ? picture(list[0].variants[0].images[0], c.name, { sizes: "(max-width: 700px) 50vw, 14vw" }) : ""}<span class="cat__name">${esc(c.name)}</span><span class="cat__n">${list.length} ${plural(list.length, "модель", "модели", "моделей")}</span></a>`).join("")}
-  </div>
+<section class="section section--manifest"><div class="wrap">
+  ${manifest()}
+  <p class="center"><a class="link" href="/about/">История бренда</a></p>
 </div></section>
 
 <section class="section section--tint"><div class="wrap">
-  <div class="section__head"><div><p class="kicker">Палитра сезона</p><h2 class="h2">Три цвета — один гардероб</h2></div></div>
-  <p class="lead lead--narrow">Вещи коллекции сочетаются внутри своего цвета и между цветами: жакет «каперс» носится с брюками «антрацит», блуза «ракушка» — с любыми брюками. Собирайте капсулу, а не отдельные покупки.</p>
-  <div class="capsules">
-    ${capsules.map(([c, name, text, l]) => `<a class="capsule" href="/catalog/?color=${c}">${picture(l.img, `Капсула ${name}`, { sizes: "(max-width: 700px) 100vw, 33vw" })}<span class="capsule__txt">${swatch(c)}<b>${name}</b><span>${esc(text)}</span><span class="link">Смотреть вещи</span></span></a>`).join("")}
-  </div>
+  <div class="section__head"><div><p class="kicker">Готовые гардеробы</p><h2 class="h2">Капсулы сезона</h2></div><a class="link" href="/capsules/">Все капсулы</a></div>
+  <div class="capsules">${capsules.map((c) => capsuleTile(c)).join("")}</div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="section__head"><h2 class="h2">Хиты сезона</h2><a class="link" href="/catalog/">Весь каталог</a></div>
+${materialsBlock()}
+
+<section class="section section--tint"><div class="wrap">
+  <div class="section__head"><div><p class="kicker">Осень — зима 2026</p><h2 class="h2">Новое в коллекции</h2></div><a class="link" href="/catalog/">Вся коллекция · ${products.length}</a></div>
   <div class="grid">${featured.map((p) => card(p)).join("")}</div>
 </div></section>
 
-<section class="section section--dark"><div class="wrap">
-  <div class="section__head"><div><p class="kicker">Лукбук AW26</p><h2 class="h2">Готовые образы</h2></div><a class="link" href="/looks/">Все ${lookList.length} образов</a></div>
-  <p class="lead lead--narrow">Каждый образ из лукбука можно заказать целиком — в один клик, а размер уточнить с консультантом.</p>
-  <div class="strip">${lookList.filter((_, i) => i % 3 === 0).map((l) => `<a class="strip__item" href="/looks/#${l.id}">${picture(l.img, `Образ ${l.n}`, { sizes: "(max-width: 700px) 45vw, 16vw" })}<span>${l.items.length} ${plural(l.items.length, "вещь", "вещи", "вещей")}</span></a>`).join("")}</div>
-</div></section>
-
-<section class="section"><div class="wrap split">
-  <div>
-    <p class="kicker">Как заказать</p>
-    <h2 class="h2">Без оплаты на сайте</h2>
-    <p class="lead">Мы не просим платить заранее за то, что вы ещё не видели. Сначала разговор с консультантом, потом — оплата удобным способом.</p>
-    ${steps}
+<section class="section"><div class="wrap">
+  <div class="editorial">
+    ${editorial.map((l) => `<a class="editorial__img" href="/looks/#${l.id}">${picture(l.img, `Образ ${l.n}: ${l.items.map((it) => it.p.title).join(", ")}`, { sizes: "(max-width: 700px) 100vw, 50vw" })}</a>`).join("")}
   </div>
-  <div class="brand-box">
-    <p class="kicker">О бренде</p>
-    <h2 class="h2">${esc(site.brand)}</h2>
-    <p>Немецкая марка женской одежды из Штутгарта. Дизайнер бренда с первой коллекции работает со спокойной нейтральной палитрой и современной, удобной посадкой: высокие мягкие пояса, свободные жакеты, брюки, которые не нужно «терпеть».</p>
-    <p>Бренд представлен в бутиках Германии, Австрии, Швейцарии, Великобритании, Нидерландов, США и других стран. В Перми коллекция ${esc(site.brand)} — в бутике в ${site.mall}.</p>
+  <div class="editorial__txt">
+    <p class="kicker">Лукбук</p>
+    <h2 class="h2">${lookList.length} образов сезона</h2>
+    <p class="lead">Каждый образ из лукбука можно заказать целиком, а размер уточнить с консультантом.</p>
+    <a class="btn btn--ghost" href="/looks/">Смотреть лукбук</a>
   </div>
 </div></section>
 
-<section class="section section--tint"><div class="wrap split">
-  <div>
+<section class="section section--tint"><div class="wrap visit">
+  <div class="visit__img">${picture(L(10).img, "Ania Schierholt: белая рубашка и светлые брюки", { sizes: "(max-width: 900px) 100vw, 40vw" })}</div>
+  <div class="visit__txt">
     <p class="kicker">Бутик в Перми</p>
     <h2 class="h2">Приходите на примерку</h2>
-    <p class="lead">${esc(site.address)}${site.addressFloor ? ", " + esc(site.addressFloor) : ""}</p>
-    <p>${esc(site.hours)}</p>
-    <p>Отметьте в запросе «примерка в бутике» — отложим нужные размеры к вашему приходу.</p>
-    <div class="btn-row"><a class="btn btn--dark" href="tel:${site.phoneHref}" data-goal="phone_click">Позвонить</a><a class="btn btn--ghost" href="/boutique/">Как добраться</a></div>
+    <p class="lead">${esc(site.address)}${site.addressFloor ? ", " + esc(site.addressFloor) : ""}<br>${esc(site.hours)}</p>
+    <p>Отложим вещи в ваших размерах: вы примерите их в спокойной обстановке, а консультант поможет собрать капсулу под ваш гардероб.</p>
+    <div class="btn-row"><a class="btn btn--dark" href="#consult">Записаться на примерку</a><a class="btn btn--ghost" href="/boutique/">Как добраться</a></div>
+    <p class="note">Доставка по России · Оплата после разговора с консультантом</p>
   </div>
-  ${mapEmbed}
 </div></section>
-
-<section class="section"><div class="wrap narrow">
-  <h2 class="h2">Частые вопросы</h2>
-  ${faqHtml}
-</div></section>
-${callbackForm("Главная")}`;
+${callbackForm("Главная", "Персональная консультация", "Оставьте телефон — консультант бутика подберёт размер, соберёт капсулу и пришлёт фото вещей в мессенджер.")}`;
   write("index.html", layout({
     title: `${site.shopName} — женская одежда в наличии, бутик в ${site.mall}`,
-    desc: `Бутик ${site.brand} в Перми, ${site.mall}. Коллекция осень–зима 2026: брюки, жакеты, блузы, пальто, жилеты. Всё в наличии, примерка в бутике, доставка по России.`,
+    desc: `Бутик ${site.brand} в Перми, ${site.mall}. Коллекция осень–зима 2026: костюмы, брюки, жакеты, блузы, пальто, стёганые жилеты. Примерка в бутике, доставка по России.`,
     path: "/",
     body,
     main: "page-home",
-    jsonld: [ldStore, faqLd],
+    jsonld: [ldStore],
+  }));
+}
+
+function pageCapsules() {
+  const cr = [["/", "Главная"], ["/capsules/", "Капсулы"]];
+  const body = `<div class="wrap">
+  ${crumbs(cr)}
+  <div class="page-head page-head--center">
+    <p class="kicker">Осень — зима 2026</p>
+    <h1 class="h1 h1--page">Капсулы ${esc(site.brand)}</h1>
+    <p class="lead">Вещи бренда задуманы так, чтобы складываться вместе. Мы собрали коллекцию в капсулы — готовые гардеробы, внутри которых всё сочетается.</p>
+  </div>
+  <div class="capsule-rows">
+    ${capsules.map((c, i) => `<a class="capsule-row${i % 2 ? " capsule-row--rev" : ""}" href="${c.url}">
+      <span class="capsule-row__img">${picture(c.cover.img, `Капсула «${c.title}»`, { sizes: "(max-width: 900px) 100vw, 50vw" })}</span>
+      <span class="capsule-row__txt"><span class="kicker">${nItems(c.items.length)} · ${c.looks.length} ${plural(c.looks.length, "образ", "образа", "образов")}</span><b class="h2">${esc(c.title)}</b><span class="lead">${esc(c.lead)}</span><span class="link">Смотреть капсулу</span></span>
+    </a>`).join("")}
+  </div>
+</div>
+${callbackForm("Капсулы", "Соберём капсулу под вас", "Расскажите, для каких случаев нужен гардероб, — консультант подберёт вещи из наличия и пришлёт фото.")}`;
+  write("capsules/index.html", layout({
+    title: `Капсулы ${site.brand}: костюм, офисный гардероб, тёплые слои | ${site.shopName}`,
+    desc: `Готовые капсулы ${site.brand} осень–зима 2026: идеальный костюм, офисный гардероб вне времени, тёплые слои, оттенки ракушки. Примерка в Перми, доставка по России.`,
+    path: "/capsules/",
+    body,
+    main: "page-capsules",
+    jsonld: [crumbsLd(cr)],
+  }));
+}
+
+function pageCapsule(c) {
+  const cr = [["/", "Главная"], ["/capsules/", "Капсулы"], [c.url, c.title]];
+  const body = `<div class="wrap">
+  ${crumbs(cr)}
+  <div class="capsule-head">
+    <div class="capsule-head__img">${picture(c.cover.img, `Капсула «${c.title}»`, { sizes: "(max-width: 900px) 100vw, 50vw", eager: true })}</div>
+    <div class="capsule-head__txt">
+      <p class="kicker">Капсула · ${nItems(c.items.length)}</p>
+      <h1 class="h1 h1--page">${esc(c.title)}</h1>
+      <p class="lead">${esc(c.lead)}</p>
+      <p>${esc(c.text)}</p>
+      <div class="btn-row"><a class="btn btn--dark" href="#consult">Подобрать с консультантом</a><a class="btn btn--ghost" href="#items">Вещи капсулы</a></div>
+    </div>
+  </div>
+</div>
+<section class="section" id="items"><div class="wrap">
+  <div class="section__head"><h2 class="h2">Вещи капсулы</h2></div>
+  <div class="grid">${c.items.map(({ p, v }) => card(p, { color: v.color })).join("")}</div>
+</div></section>
+<section class="section section--tint"><div class="wrap">
+  <div class="section__head"><div><p class="kicker">Как носить</p><h2 class="h2">Образы капсулы</h2></div><a class="link" href="/looks/">Весь лукбук</a></div>
+  <div class="strip">${c.looks.map((l) => `<a class="strip__item" href="/looks/#${l.id}">${picture(l.img, `Образ ${l.n}`, { sizes: "(max-width: 700px) 45vw, 20vw" })}<span>Образ ${l.n} · ${nItems(l.items.length)}</span></a>`).join("")}</div>
+</div></section>
+<section class="section"><div class="wrap">
+  <div class="section__head"><h2 class="h2">Другие капсулы</h2></div>
+  <div class="capsules capsules--3">${capsules.filter((x) => x !== c).map((x) => capsuleTile(x, "(max-width: 700px) 80vw, 33vw")).join("")}</div>
+</div></section>
+${callbackForm("Капсула: " + c.title, "Соберём эту капсулу под вас", "Оставьте телефон — консультант подберёт размеры, предложит сочетания и отложит вещи на примерку.")}`;
+  write(`capsules/${c.id}/index.html`, layout({
+    title: `${c.title} — капсула ${site.brand} | ${site.shopName}`,
+    desc: `${c.lead} ${nItems(c.items.length)} ${site.brand} в наличии в Перми, ${site.mall}. Примерка, доставка по России.`,
+    path: c.url,
+    og: c.cover.img.src,
+    body,
+    main: "page-capsule",
+    jsonld: [crumbsLd(cr)],
+  }));
+}
+
+function pageAbout() {
+  const cr = [["/", "Главная"], ["/about/", "О бренде"]];
+  const L = (n) => lookList.find((l) => l.n === n);
+  const body = `<div class="wrap">
+  ${crumbs(cr)}
+  <div class="capsule-head">
+    <div class="capsule-head__img">${picture(L(16).img, "Ania Schierholt: белая блуза с воротником-стойкой", { sizes: "(max-width: 900px) 100vw, 50vw", eager: true })}</div>
+    <div class="capsule-head__txt">
+      <p class="kicker">О бренде</p>
+      <h1 class="h1 h1--page">${esc(site.brand)}</h1>
+      <p class="lead">Немецкая марка женской одежды из Штутгарта. «Unaufgeregter Luxus» — спокойная, негромкая роскошь: точный крой, природные цвета, вещи, которые носят годами.</p>
+      <p>Бренд представлен в бутиках Германии, Австрии, Швейцарии, Великобритании, Нидерландов, США и других стран. В Перми коллекция ${esc(site.brand)} — в бутике в ${site.mall}.</p>
+    </div>
+  </div>
+</div>
+<section class="section section--manifest"><div class="wrap">${manifest("p")}</div></section>
+<section class="section section--tint"><div class="wrap">
+  <div class="section__head"><div><p class="kicker">ДНК бренда</p><h2 class="h2">Откуда берётся стиль</h2></div></div>
+  ${dnaList}
+</div></section>
+${materialsBlock()}
+<section class="section section--tint"><div class="wrap">
+  <div class="section__head"><div><p class="kicker">Готовые гардеробы</p><h2 class="h2">Капсулы сезона</h2></div><a class="link" href="/capsules/">Все капсулы</a></div>
+  <div class="capsules">${capsules.map((c) => capsuleTile(c)).join("")}</div>
+</div></section>
+${callbackForm("О бренде", "Персональная консультация", "Оставьте телефон — консультант бутика расскажет о коллекции, подберёт размер и отложит вещи на примерку.")}`;
+  write("about/index.html", layout({
+    title: `О бренде ${site.brand} — немецкая женская одежда из Штутгарта | ${site.shopName}`,
+    desc: `${site.brand} — немецкий бренд женской одежды: спокойная роскошь, точный крой, производство в Польше и Португалии. Бутик в Перми, ${site.mall}.`,
+    path: "/about/",
+    body,
+    main: "page-about",
+    jsonld: [crumbsLd(cr)],
   }));
 }
 
@@ -519,7 +641,7 @@ function lookBlock(l, currentId) {
 function pageProduct(p) {
   const cr = [["/", "Главная"], ["/catalog/", "Каталог"], [`/catalog/${p.category.id}/`, p.category.name], [p.url, p.title]];
   const siblings = products.filter((x) => x.model === p.model && x.type === p.type && x !== p);
-  const sameCat = products.filter((x) => x.category === p.category && x !== p && !siblings.includes(x)).slice(0, 4);
+  const sameCat = products.filter((x) => x.category === p.category && x !== p && !siblings.includes(x)).slice(0, 3);
   const v0 = p.variants[0];
   const galleries = p.variants.map((v, i) => `<div class="gallery" data-gallery="${v.color}"${i ? " hidden" : ""}>
       <div class="gallery__main" data-gallery-track>
@@ -720,6 +842,8 @@ function pageDelivery() {
   <p>При покупке с доставкой вы можете отказаться от вещи надлежащего качества в течение 7 дней после получения, если сохранены её товарный вид, потребительские свойства и фабричные ярлыки, а также документ о покупке (ст. 26.1 Закона «О защите прав потребителей»). Деньги возвращаются не позднее 10 дней с момента получения возврата; стоимость доставки не возвращается.</p>
   <p>При покупке в бутике обмен вещи надлежащего качества возможен в течение 14 дней, если она не была в употреблении и сохранены ярлыки (ст. 25 того же закона).</p>
   <p>Чтобы оформить возврат или обмен, позвоните по телефону <a href="tel:${site.phoneHref}">${esc(site.phone)}</a> или напишите на <a href="mailto:${esc(site.email)}">${esc(site.email)}</a>.</p>
+  <h2 class="h3">Частые вопросы</h2>
+  ${faqHtml}
   <h2 class="h3">Продавец</h2>
   <p>${esc(legalFull)}. Адрес: ${esc(site.address)}.</p>
   </div>
@@ -729,7 +853,7 @@ function pageDelivery() {
     desc: `Как заказать ${site.brand} в Перми: примерка в ${site.mall}, доставка по Перми и России, оплата после звонка консультанта, таблица размеров, возврат.`,
     path: "/delivery/",
     body,
-    jsonld: [crumbsLd(cr)],
+    jsonld: [crumbsLd(cr), faqLd],
   }));
 }
 
@@ -840,7 +964,7 @@ function catalogJs() {
 }
 
 function seoFiles() {
-  const urls = ["/", "/catalog/", ...cat.categories.filter((c) => products.some((p) => p.category === c)).map((c) => `/catalog/${c.id}/`), ...products.map((p) => p.url), "/looks/", "/boutique/", "/delivery/", "/politika-konfidentsialnosti/", "/soglasie/"];
+  const urls = ["/", "/catalog/", ...cat.categories.filter((c) => products.some((p) => p.category === c)).map((c) => `/catalog/${c.id}/`), ...products.map((p) => p.url), "/capsules/", ...capsules.map((c) => c.url), "/about/", "/looks/", "/boutique/", "/delivery/", "/politika-konfidentsialnosti/", "/soglasie/"];
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${site.domain}${u}</loc></url>`).join("\n")}\n</urlset>\n`);
   write("robots.txt", `User-agent: *\nDisallow: /cart/\nDisallow: /spasibo/\nDisallow: /send.php\nClean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&c\n\nSitemap: ${site.domain}/sitemap.xml\n`);
   // Товарный фид для Яндекса (Директ, Товары) — только позиции с ценой
@@ -886,11 +1010,12 @@ function staticFiles() {
   copy("src/.htaccess", ".htaccess");
   copy("server/send.php", "send.php");
   // config.php (пароли) в сборку не копируется — он лежит только на хостинге рядом с send.php
-  const F = "node_modules/@fontsource-variable/manrope/files/";
+  // Open Sans Light — тот же гротеск, что на сайте бренда; Cormorant Garamond — заголовки и цитаты
+  const F = "node_modules/@fontsource/open-sans/files/";
   const G = "node_modules/@fontsource/cormorant-garamond/files/";
-  copy(F + "manrope-cyrillic-wght-normal.woff2", "fonts/manrope-cyrillic.woff2");
-  copy(F + "manrope-latin-wght-normal.woff2", "fonts/manrope-latin.woff2");
-  for (const w of ["400", "500"]) for (const s of ["normal", "italic"]) for (const sub of ["cyrillic", "latin"])
+  for (const w of ["300", "400", "600"]) for (const sub of ["cyrillic", "latin"])
+    copy(`${F}open-sans-${sub}-${w}-normal.woff2`, `fonts/open-sans-${sub}-${w}-normal.woff2`);
+  for (const w of ["300", "400", "500"]) for (const s of ["normal", "italic"]) for (const sub of ["cyrillic", "latin"])
     copy(`${G}cormorant-garamond-${sub}-${w}-${s}.woff2`, `fonts/cormorant-${sub}-${w}-${s}.woff2`);
 }
 
@@ -968,6 +1093,9 @@ pageHome();
 pageCatalog(null);
 for (const c of cat.categories) if (products.some((p) => p.category === c)) pageCatalog(c);
 for (const p of products) pageProduct(p);
+pageCapsules();
+for (const c of capsules) pageCapsule(c);
+pageAbout();
 pageLooks();
 pageBoutique();
 pageDelivery();
