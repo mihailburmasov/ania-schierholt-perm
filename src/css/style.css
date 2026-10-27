@@ -116,6 +116,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* первый экран: одна большая фотография, медленное приближение */
 .hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; background: #2b2b2a; color: #fff; display: flex; align-items: flex-end; }
 .hero__media { position: absolute; inset: 0; }
+.hero__media picture { position: absolute; inset: 0; }
 .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; transform-origin: 50% 0; animation: slowzoom 24s ease-out both; }
 .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 20, 18, .38) 0, rgba(20, 20, 18, 0) 22%, rgba(20, 20, 18, 0) 50%, rgba(20, 20, 18, .5) 100%); }
 @keyframes slowzoom { from { transform: scale(1.08); } to { transform: scale(1); } }
@@ -124,19 +125,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hero__title { font: 300 clamp(44px, 6vw, 96px)/1 var(--serif); margin: 0 0 16px; }
 .hero__title span { display: block; font-style: italic; }
 .hero__tag { font-size: 15px; letter-spacing: .04em; margin: 0 0 32px; max-width: 36ch; color: rgba(255, 255, 255, .9); }
-/* широкий экран — три образа в полный рост встык (одиночный вертикальный кадр там обрезается до лица); узкий и вертикальный — одно фото */
-.hero__media--wide { display: none; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #1f1e1c; }
-.hero__media--wide span { overflow: hidden; }
-.hero__media--wide img { object-position: 50% 15%; transform-origin: 50% 30%; }
+/* широкий экран — как разворот журнала: один кадр (hero.wide) в полную высоту справа, слева спокойное поле с заголовком.
+   Горизонтальных фото у бренда нет, а вертикальный кадр на всю ширину обрезается до лица; шапка здесь сразу плотная */
 @media (min-width: 901px) and (min-aspect-ratio: 1/1) {
-  .hero__media--m { display: none; }
-  .hero__media--wide { display: grid; }
-  /* как обложка: заголовок в одну строку по центру внизу, на затемнении поверх ног и ступеней */
-  .hero__in { text-align: center; align-items: center; padding-bottom: clamp(40px, 7vh, 88px); }
-  .hero__title { font-size: clamp(44px, 4.6vw, 88px); margin-bottom: 10px; }
-  .hero__title span { display: inline; }
-  .hero__tag { margin-bottom: 26px; max-width: none; }
-  .hero__media--wide::after { background: linear-gradient(180deg, rgba(20, 20, 18, .42) 0, rgba(20, 20, 18, 0) 18%, rgba(20, 20, 18, 0) 50%, rgba(20, 20, 18, .72) 100%); }
+  .page-home .header { background: rgba(248, 246, 242, .96); border-color: var(--line); backdrop-filter: blur(10px); color: var(--ink); }
+  .page-home .header .cart-btn__count { background: var(--ink); color: var(--bg); }
+  .hero { display: grid; grid-template-columns: 44fr 56fr; align-items: stretch; padding-top: var(--header-h); background: var(--tint); color: var(--ink); }
+  .hero__media { position: relative; inset: auto; grid-column: 2; grid-row: 1; overflow: hidden; }
+  .hero__media::after { display: none; }
+  .hero__media img { object-position: 50% 8%; transform-origin: 50% 20%; }
+  .hero__in { grid-column: 1; grid-row: 1; align-self: center; max-width: none; margin: 0; padding: 0 clamp(32px, 5vw, 96px); text-align: left; align-items: flex-start; }
+  .hero .kicker { color: var(--muted); margin-bottom: 28px; }
+  .hero__title { font-size: clamp(48px, 5.2vw, 104px); margin-bottom: 28px; }
+  .hero__tag { color: var(--ink-2); margin-bottom: 44px; max-width: 30ch; }
+  .hero .btn--light { color: var(--ink); border-color: var(--ink); }
+  .hero .btn--light:hover { background: var(--ink); color: var(--bg); }
 }
 
 /* секции */
