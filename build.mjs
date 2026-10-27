@@ -119,7 +119,6 @@ const materials = ed.materials.items.map((m) => ({ ...m, item: resolveItems([m.i
 async function prepareImages() {
   for (const l of lookList) l.img = await img(l.image, LOOK_W);
   ed.hero.img = await img(ed.hero.image, LOOK_W);
-  ed.hero.wideImg = await img(ed.hero.wide, LOOK_W);
   for (const m of materials) m.img = await img(m.image, [480, 760], m.crop);
   for (const p of products)
     for (const v of p.variants) {
@@ -410,10 +409,10 @@ const dnaList = `<ol class="dna">${ed.dna.map(([t, d]) => `<li><b>${esc(t)}</b><
 function pageHome() {
   const L = (n) => lookList.find((l) => l.n === n);
   const featured = ["ma-3362-69", "ja-3351-66", "bl-3337-42", "we-3360-49", "ja-3358-69", "ho-3389-69"].map((id) => products.find((p) => p.id === id));
-  const editorial = [L(1), L(16)]; // образ 11 (пальто на лестнице) уже на первом экране
+  const editorial = [L(11), L(16)];
   const body = `
 <section class="hero">
-  <div class="hero__media"><picture><source media="(min-width: 901px) and (min-aspect-ratio: 1/1)" srcset="${ed.hero.wideImg.srcset}" sizes="56vw">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026", { sizes: "100vw", eager: true })}</picture></div>
+  <div class="hero__media">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026: стёганый жилет и блуза цвета антрацит", { sizes: "100vw", eager: true })}</div>
   <div class="wrap hero__in">
     <p class="kicker">${esc(ed.hero.kicker)}</p>
     <h1 class="hero__title">${esc(site.brand)} <span>в Перми</span></h1>
