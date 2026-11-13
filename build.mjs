@@ -410,6 +410,7 @@ function pageHome() {
   const L = (n) => lookList.find((l) => l.n === n);
   const featured = ["ma-3362-69", "ja-3351-66", "bl-3337-42", "we-3360-49", "ja-3358-69", "ho-3389-69"].map((id) => products.find((p) => p.id === id));
   const editorial = [L(11), L(16)];
+  const lookFeed = [L(3), L(8), L(14), L(23)];
   const body = `
 <section class="hero">
   <div class="hero__media">${picture(ed.hero.img, "Ania Schierholt, коллекция осень–зима 2026: шёлковая блуза цвета айвори", { sizes: "100vw", eager: true })}</div>
@@ -424,6 +425,10 @@ function pageHome() {
 <section class="section section--manifest"><div class="wrap">
   ${manifest()}
   <p class="center"><a class="link" href="/about/">История бренда</a></p>
+</div></section>
+
+<section class="section section--feed"><div class="wrap">
+  <div class="feed">${lookFeed.map((l) => `<figure class="feed__item">${picture(l.img, `Образ ${l.n}: ${l.items.map((it) => it.p.title).join(", ")}`, { sizes: "(max-width: 700px) 100vw, 50vw" })}</figure>`).join("")}</div>
 </div></section>
 
 <section class="section section--tint"><div class="wrap">

@@ -196,6 +196,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .editorial__img:hover img { transform: scale(1.02); }
 .editorial__txt { max-width: 640px; margin: clamp(40px, 5vw, 72px) auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; }
 
+/* лента кадров коллекции на главной — как на ania-schierholt.com/collection: просто крупные фото, по две в ряд */
+.feed { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(8px, 1vw, 16px); }
+.feed__item { margin: 0; overflow: hidden; }
+.feed__item img { display: block; width: 100%; height: auto; }
+
 /* бутик на главной */
 .visit { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 6vw, 112px); align-items: center; }
 .visit__img img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: top; }
@@ -483,6 +488,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .manifest__text { columns: 1; }
   .editorial { grid-template-columns: 1fr; }
   .editorial__img:nth-child(2) { display: none; }
+  .feed { grid-template-columns: 1fr; }
   .strip { grid-auto-columns: 42%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
   .form--inline { grid-template-columns: 1fr; }
   .look { grid-template-columns: 1fr; }
