@@ -30,12 +30,14 @@ for (const item of selected) {
   const [, type, model, fabric] = match;
   if (!colors[item.color]) throw new Error(`Неизвестный цвет: ${item.color}`);
   const oldProduct = previous.get(item.article);
+  const bankPhoto = `bank/${item.photo}`;
+  const photo = fs.existsSync(`_source/raw/${bankPhoto}.jpg`) ? bankPhoto : item.photo;
   products.push({
     type, model, fabric, collections: ['shop'],
     title: oldProduct?.title || titles[type],
     desc: `${titles[type]} ${item.article}, цвет «${colors[item.color].name.toLowerCase()}». Текущий размер и стоимость подскажет консультант бутика.`,
     features: [],
-    variants: [{ color: item.color, alt: [], pack: [item.photo] }],
+    variants: [{ color: item.color, alt: [], pack: [photo] }],
     source: { catalog: item.photo.split('/')[0], page: item.page },
     ...(item.sizesRu ? { sizesRu: item.sizesRu } : {}),
   });

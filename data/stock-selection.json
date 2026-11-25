@@ -11,7 +11,7 @@
     { "article": "BL 2920/67", "color": "truffel", "photo": "aw24/aw24-p03-1", "page": 3 },
     { "article": "JA 2967/32", "color": "truffel", "photo": "aw24/aw24-p03-2", "page": 3 },
     { "article": "BL 2923/67", "color": "truffel", "photo": "aw24/aw24-p05-3", "page": 5 },
-    { "article": "RO 2902/10", "color": "tanne", "photo": "aw24/aw24-p12-1", "page": 12 },
+    { "article": "RO 2902/10", "color": "tanne", "photo": "aw24/aw24-p12-1", "page": 12, "sizesRu": [44] },
     { "article": "JA 2958/07", "color": "tanne", "photo": "aw24/aw24-p12-2", "page": 12 },
     { "article": "KL 2905/03", "color": "black", "photo": "aw24/aw24-p23-1", "page": 23 },
     { "article": "BL 2922/05", "color": "white", "photo": "aw24/aw24-p27-1", "page": 27 },
