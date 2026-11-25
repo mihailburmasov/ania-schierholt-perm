@@ -706,12 +706,12 @@ function pageProduct(p) {
       </div>
 
       <div class="opt">
-        <div class="opt__label">Размер <span class="note">RU / DE</span><button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
-        <p class="note">${p.sizesDe.length ? 'Доступные размеры указаны ниже. Наличие перед заказом подтвердит консультант.' : 'Размер уточнит консультант бутика.'}</p>
-        <div class="opt__row sizes-row" role="radiogroup" aria-label="Размер">
+        <div class="opt__label">Размер ${p.sizesDe.length ? '<span class="note">RU / DE</span>' : ''}<button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
+        <p class="note">${p.sizesDe.length ? 'Доступные размеры указаны ниже. Наличие перед заказом подтвердит консультант.' : 'Добавьте вещь в корзину — консультант уточнит нужный размер при звонке.'}</p>
+        ${p.sizesDe.length ? `<div class="opt__row sizes-row" role="radiogroup" aria-label="Размер">
           ${p.sizesDe.map((s) => `<button type="button" class="size" data-size="${s}" role="radio" aria-checked="false">${site.sizeRu[s]}<small>${s}</small></button>`).join("")}
           <button type="button" class="size size--help" data-size="help" role="radio" aria-checked="false">Помочь с размером</button>
-        </div>
+        </div>` : ''}
       </div>
 
       ${p.short ? `<div class="opt">

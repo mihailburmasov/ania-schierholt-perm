@@ -300,6 +300,7 @@
       b.addEventListener("click", function () { sel.length = b.getAttribute("data-length"); $$("[data-length]").forEach(function (x) { x.classList.toggle("is-on", x === b); }); });
     });
     function addCurrent() {
+      if (!P.z.length) sel.size = "help";
       if (!sel.size) {
         sizesRow.classList.add("is-invalid");
         var m = $("[data-add-msg]"); m.textContent = "Выберите размер или «Помочь с размером»"; m.className = "form__msg is-err";
