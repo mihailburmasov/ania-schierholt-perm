@@ -502,3 +502,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .search__res { grid-template-columns: repeat(2, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.category-wait { max-width: 740px; padding: clamp(32px, 5vw, 72px); margin: 24px 0 80px; border: 1px solid var(--line); background: var(--surface); }
+.category-wait p { margin: 0 0 28px; line-height: 1.7; }

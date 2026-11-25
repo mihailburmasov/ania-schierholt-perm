@@ -51,6 +51,7 @@
   /* ---------- корзина ---------- */
   var KEY = "s60_cart";
   var cart = store.get(KEY, []).filter(function (l) { return CAT[l.id]; });
+  cart.forEach(function (l) { if (l.size && l.size !== "help" && (CAT[l.id].z || []).indexOf(l.size) < 0) l.size = "help"; });
   function save() { store.set(KEY, cart); renderCount(); }
   function count() { return cart.reduce(function (n, l) { return n + l.qty; }, 0); }
   function renderCount() {
@@ -72,7 +73,7 @@
   function lineHtml(l, i, full) {
     var p = CAT[l.id], v = p.v[l.color] || {};
     var sizeSel = '<select data-line-size="' + i + '" aria-label="Размер"><option value="">Размер…</option>' +
-      SITE.sizes.map(function (s) { return '<option value="' + s + '"' + (l.size === s ? " selected" : "") + ">" + SITE.sizeRu[s] + " RU / " + s + " DE</option>"; }).join("") +
+      (p.z || []).map(function (s) { return '<option value="' + s + '"' + (l.size === s ? " selected" : "") + ">" + SITE.sizeRu[s] + " RU / " + s + " DE</option>"; }).join("") +
       '<option value="help"' + (l.size === "help" ? " selected" : "") + ">Помочь с размером</option></select>";
     return '<div class="line">' +
       '<a class="line__img" href="' + p.u + "?c=" + l.color + '"><img src="' + v.i + '" alt="" loading="lazy"></a>' +

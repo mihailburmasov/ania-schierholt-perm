@@ -1,0 +1,47 @@
+{
+  "_comment": "Позиции, отмеченные клиенткой в PDF. photo — чистый кадр из PDF без рукописных пометок. Размеры дополняются только по читаемым отметкам; остальные уточняет консультант.",
+  "items": [
+    { "article": "RO 2696/50", "color": "caramel", "photo": "ss23/ss23-p20-2", "page": 20 },
+    { "article": "KL 2693/15", "color": "coralle", "photo": "ss23/ss23-p26-2", "page": 26 },
+
+    { "article": "BL 2728/03", "color": "white", "photo": "aw23/aw23-p22-1", "page": 22 },
+    { "article": "JA 2754/32", "color": "tinte", "photo": "aw23/aw23-p22-3", "page": 22 },
+    { "article": "RO 2794/63", "color": "tinte", "photo": "aw23/aw23-p25-1", "page": 25 },
+
+    { "article": "BL 2920/67", "color": "truffel", "photo": "aw24/aw24-p03-1", "page": 3 },
+    { "article": "JA 2967/32", "color": "truffel", "photo": "aw24/aw24-p03-2", "page": 3 },
+    { "article": "BL 2923/67", "color": "truffel", "photo": "aw24/aw24-p05-3", "page": 5 },
+    { "article": "RO 2902/10", "color": "tanne", "photo": "aw24/aw24-p12-1", "page": 12 },
+    { "article": "JA 2958/07", "color": "tanne", "photo": "aw24/aw24-p12-2", "page": 12 },
+    { "article": "KL 2905/03", "color": "black", "photo": "aw24/aw24-p23-1", "page": 23 },
+    { "article": "BL 2922/05", "color": "white", "photo": "aw24/aw24-p27-1", "page": 27 },
+    { "article": "HO 2986/69", "color": "krokant", "photo": "aw24/aw24-p28-2", "page": 28, "sizesRu": [42, 44] },
+
+    { "article": "BL 3120/61", "color": "black", "photo": "aw25/aw25-p03-1", "page": 3 },
+    { "article": "JA 3156/51", "color": "black", "photo": "aw25/aw25-p03-2", "page": 3 },
+    { "article": "MA 3164/51", "color": "black", "photo": "aw25/aw25-p06-1", "page": 6 },
+    { "article": "BL 3111/61", "color": "black", "photo": "aw25/aw25-p06-2", "page": 6 },
+    { "article": "BL 3113/61", "color": "black", "photo": "aw25/aw25-p07-2", "page": 7 },
+    { "article": "JA 3161/52", "color": "fog", "photo": "aw25/aw25-p10-2", "page": 10 },
+    { "article": "HO 3183/52", "color": "fog", "photo": "aw25/aw25-p10-2", "page": 10 },
+    { "article": "BL 3114/62", "color": "violet", "photo": "aw25/aw25-p15-2", "page": 15 },
+    { "article": "BL 3123/62", "color": "mauve", "photo": "aw25/aw25-p15-5", "page": 15 },
+    { "article": "BL 3119/62", "color": "camel", "photo": "aw25/aw25-p23-2", "page": 23 },
+    { "article": "MA 3164/53", "color": "camel", "photo": "aw25/aw25-p23-1", "page": 23 },
+    { "article": "JA 3156/53", "color": "camel", "photo": "aw25/aw25-p24-1", "page": 24 },
+    { "article": "JA 3161/53", "color": "camel", "photo": "aw25/aw25-p25-1", "page": 25 },
+    { "article": "BL 3126/05", "color": "white", "photo": "aw25/aw25-p25-5", "page": 25 },
+    { "article": "BL 3116/05", "color": "white", "photo": "aw25/aw25-p25-6", "page": 25 },
+
+    { "article": "JA 3351/66", "color": "caper", "photo": "aw26/aw26-p03-1", "page": 3 },
+    { "article": "RO 3396/66", "color": "caper", "photo": "aw26/aw26-p03-1", "page": 3 },
+    { "article": "JA 3363/69", "color": "muschel", "photo": "aw26/aw26-p06-1", "page": 6 },
+    { "article": "HO 3378/69", "color": "muschel", "photo": "aw26/aw26-p06-1", "page": 6 },
+    { "article": "JA 3350/69", "color": "muschel", "photo": "aw26/aw26-p07-1", "page": 7 },
+    { "article": "MA 3362/69", "color": "muschel", "photo": "aw26/aw26-p08-1", "page": 8 },
+    { "article": "HO 3373/69", "color": "muschel", "photo": "aw26/aw26-p10-1", "page": 10 },
+    { "article": "HO 3384/55", "color": "muschel", "photo": "aw26/aw26-p15-1", "page": 15, "sizesRu": [40, 42, 44, 46] },
+    { "article": "JA 3358/69", "color": "anthra", "photo": "aw26/aw26-p25-1", "page": 25 },
+    { "article": "HO 3389/69", "color": "anthra", "photo": "aw26/aw26-p26-1", "page": 26 }
+  ]
+}
