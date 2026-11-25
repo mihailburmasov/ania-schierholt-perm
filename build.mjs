@@ -351,7 +351,7 @@ function callbackForm(source, title = "Нужна консультация?", te
 </div></section>`;
 }
 
-const mapEmbed = `<div class="map"><iframe title="Бутик на карте" src="https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(`${site.city}, ${site.street}, ${site.mall.replace(/[«»]/g, "")}`)}&amp;z=16" loading="lazy" allowfullscreen></iframe></div>`;
+const mapEmbed = (address, title) => `<div class="map"><iframe title="${esc(title)}" src="https://yandex.ru/map-widget/v1/?text=${encodeURIComponent(address)}&amp;z=16" loading="lazy" allowfullscreen></iframe><a class="map__link" href="https://yandex.ru/maps/?text=${encodeURIComponent(address)}" target="_blank" rel="noopener noreferrer">Открыть в Яндекс Картах ↗</a></div>`;
 
 const sizeTable = `<div class="table-wrap"><table class="sizes">
   <thead><tr><th>Российский размер</th>${site.sizes.map((s) => `<th>${site.sizeRu[s]}</th>`).join("")}</tr></thead>
@@ -828,11 +828,13 @@ function pageBoutique() {
   const body = `<div class="wrap">
   ${crumbs(cr)}
   <div class="page-head"><h1 class="h1 h1--page">Бутик ${esc(site.brand)} в Перми</h1>
-  <p class="lead">Вся коллекция — вживую, в ${site.mall}. Примерьте, почувствуйте ткани, соберите образ вместе с консультантом.</p></div>
-  <div class="split split--top">
+  <p class="lead">Примерьте вещи, почувствуйте ткани и соберите образ вместе с консультантом в магазине «Вектор Мода».</p></div>
+  <div class="split split--top boutique-location">
     <div class="contacts">
+      <p class="kicker">Действующий магазин</p>
+      <h2 class="h2 boutique-location__name">Вектор Мода</h2>
+      <address class="boutique-address">${esc(site.city)}, ${esc(site.street)}<br>${esc(site.mall)}<br>${esc(site.addressFloor)}</address>
       <dl>
-        <dt>Адрес</dt><dd>${esc(site.address)}${site.addressFloor ? ", " + esc(site.addressFloor) : ""}</dd>
         <dt>Часы работы</dt><dd>${esc(site.hours)}</dd>
         <dt>Телефон</dt><dd><a href="tel:${site.phoneHref}" data-goal="phone_click">${esc(site.phone)}</a></dd>
         <dt>Почта</dt><dd><a href="mailto:${esc(site.email)}">${esc(site.email)}</a></dd>
@@ -842,7 +844,17 @@ function pageBoutique() {
       <p>Выберите вещи на сайте и в запросе отметьте «примерка в бутике» — мы отложим нужные размеры, и к вашему приходу всё будет готово. Можно прийти и без записи.</p>
       <a class="btn btn--dark" href="/catalog/">Выбрать вещи для примерки</a>
     </div>
-    ${mapEmbed}
+    ${mapEmbed(`${site.city}, ${site.street}, ${site.mall}`, 'Вектор Мода на карте: Ленина, 60')}
+  </div>
+  <div class="split split--top boutique-location boutique-location--coming">
+    <div class="contacts">
+      <p class="kicker">Скоро открытие</p>
+      <h2 class="h2 boutique-location__name">${esc(site.upcomingSalon.name)}</h2>
+      <p class="lead">${esc(site.upcomingSalon.description)}</p>
+      <address class="boutique-address">${esc(site.upcomingSalon.address)}</address>
+      <a class="btn btn--ghost" href="${esc(site.upcomingSalon.website)}" target="_blank" rel="noopener noreferrer">Перейти на сайт салона</a>
+    </div>
+    ${mapEmbed(site.upcomingSalon.address, 'Будущий салон на карте: Горького, 45')}
   </div>
 </div>
 ${callbackForm("Бутик", "Хотите прийти на примерку?", "Оставьте телефон — договоримся о времени и подготовим вещи в ваших размерах.")}`;

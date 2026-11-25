@@ -3,7 +3,7 @@
 // (или сразу положить config.php рядом с send.php на хостинге). config.php не коммитить.
 return [
     // Куда приходят заявки (можно несколько адресов)
-    'mail_to'   => ['TODO@example.ru'],
+    'mail_to'   => ['vektormperm@mail.ru'],
     // От чьего имени письмо (ящик на домене сайта — меньше шанс попасть в спам)
     'mail_from' => 'no-reply@example.ru',
     'from_name' => 'Ania Schierholt Пермь — сайт',
