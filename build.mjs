@@ -97,7 +97,8 @@ const products = cat.products.map((p) => {
     slug: `${category.id}-${p.model}-${p.fabric}`,
     url: `/product/${category.id}-${p.model}-${p.fabric}/`,
     price: p.price ?? null,
-    sizesDe: (p.sizesRu || []).map((ru) => site.sizes.find((de) => Number(site.sizeRu[de]) === Number(ru))).filter(Boolean),
+    sizesKnown: !!p.sizesRu?.length,
+    sizesDe: (p.sizesRu?.length ? p.sizesRu.map((ru) => site.sizes.find((de) => Number(site.sizeRu[de]) === Number(ru))).filter(Boolean) : site.sizes),
     variants: p.variants.map((v) => ({ ...v, looks: [], images: [] })),
   };
 }).sort((a, b) => cat.categories.indexOf(a.category) - cat.categories.indexOf(b.category)); // «Все» — в порядке категорий
@@ -706,8 +707,8 @@ function pageProduct(p) {
       </div>
 
       <div class="opt">
-        <div class="opt__label">Размер ${p.sizesDe.length ? '<span class="note">RU / DE</span>' : ''}<button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
-        <p class="note">${p.sizesDe.length ? 'Доступные размеры указаны ниже. Наличие перед заказом подтвердит консультант.' : 'Добавьте вещь в корзину — консультант уточнит нужный размер при звонке.'}</p>
+        <div class="opt__label">Размер <span class="note">RU / DE</span><button type="button" class="link link--sm" data-modal-open="sizes">Таблица размеров</button></div>
+        <p class="note">${p.sizesKnown ? 'Отмеченные размеры указаны ниже. Наличие перед заказом подтвердит консультант.' : 'Выберите нужный размер. Его наличие подтвердит консультант при звонке.'}</p>
         ${p.sizesDe.length ? `<div class="opt__row sizes-row" role="radiogroup" aria-label="Размер">
           ${p.sizesDe.map((s) => `<button type="button" class="size" data-size="${s}" role="radio" aria-checked="false">${site.sizeRu[s]}<small>${s}</small></button>`).join("")}
           <button type="button" class="size size--help" data-size="help" role="radio" aria-checked="false">Помочь с размером</button>
